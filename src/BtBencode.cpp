@@ -87,7 +87,7 @@ void BtQt::BtDecodeBencodeString(QByteArray const &data, QByteArray &ret)
 static inline int getLastE(QByteArray const &data, int pos)
 {
     int eN = 1, ePos = pos;
-    int lastEPos = ePos;
+    int lastEPos = ePos; // last end postion, 'e', 'i', 'l', 'd', '@strend'
     while(eN != 0 && ePos < data.size()) {
         ++ ePos;
         if(data[ePos] == ':') {
@@ -102,6 +102,7 @@ static inline int getLastE(QByteArray const &data, int pos)
         else if(data[ePos] == 'i' || data[ePos] == 'l'||
                 data[ePos] == 'd') {
             eN ++;
+            lastEPos = ePos;
         }
     }
     if(ePos >= data.size()) return -1;

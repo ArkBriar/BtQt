@@ -57,10 +57,8 @@ static void displayQList(QList<QVariant> const &list, int tabs)
         } else if(value.canConvert(QMetaType::QByteArray)) {
             qStdOut(tabs) << value.toByteArray() << endl;
         } else if(value.canConvert(QMetaType::QVariantList)) {
-            qStdOut() << endl;
             displayQList(value.toList(), tabs);
         } else if(value.canConvert(QMetaType::QVariantMap)) {
-            qStdOut() << endl;
             displayQMap(value.toMap(), tabs);
         } else {
             qDebug() << "There are illegal types.";
