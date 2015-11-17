@@ -21,8 +21,13 @@ int main(int argc, char *argv[])
 
     BtQt::BtTorrent t;
     QFile file("../test/test.torrent");
+    qDebug() << "Decode start...";
     if(t.decodeTorrentFile(file)) {
+        qDebug() << "Decode succeed!";
+    } else {
         qDebug() << "Decode failed!";
     }
+    t.display();
+
     return app.exec();
 }

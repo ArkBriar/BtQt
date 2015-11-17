@@ -1,7 +1,5 @@
-test
 build
 Demands.md
-build
 *.o
 *.pro.user*
 *.qmlproject.user*

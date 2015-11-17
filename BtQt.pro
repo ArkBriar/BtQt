@@ -21,7 +21,8 @@ CONFIG(debug, debug|release) {
 QT += qml quick script network core
 
 SOURCES += src/main.cpp \
-        src/BtBencode.cpp 
+        src/BtBencode.cpp \
+        src/BtTorrent.cpp
 
 HEADERS += include/BtBencode.h \
         include/BtTorrent.h 

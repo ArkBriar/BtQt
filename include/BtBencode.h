@@ -3,12 +3,7 @@
 #ifndef __BTBENCODE_H__
 #define __BTBENCODE_H__
 
-/* This package supports two forms of input data:
- * STL and Qt
- * */
-/* STL header files*/
-#include <cstring>
-/* Qt header files */
+#include <QByteArray>
 #include <QString>
 #include <QList>
 #include <QMap>
@@ -31,28 +26,22 @@ namespace BtQt {
      * These functions will throw exceptions if error occurs
      * */
     /*
-     *void BtDecode(std::string &torrentData);
-     *void BtDecode(QString &torrentData);
+     *void BtDecode(QByteArray &torrentData);
      */
 
-    void BtDecodeBencodeInteger(std::string const &data, QString &);
-    void BtDecodeBencodeInteger(QString const &data, QString &);
+    void BtDecodeBencodeInteger(QByteArray const &data, QByteArray &);
 
-    void BtDecodeBencodeString(std::string const &data, QString &);
-    void BtDecodeBencodeString(QString const &data, QString &);
+    void BtDecodeBencodeString(QByteArray const &data, QByteArray &);
 
-    void BtDecodeBencodeList(std::string const &data, QList<QVariant> &);
-    void BtDecodeBencodeList(QString const &data, QList<QVariant> &);
+    void BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &);
 
-    void BtDecodeBencodeDictionary(std::string const &data, QMap<QString, QVariant> &);
-    void BtDecodeBencodeDictionary(QString const &data, QMap<QString, QVariant> &);
+    void BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVariant> &);
 
     /* Provide two sets of functions to encode data to the torrent data
      * These functions will throw exceptions if error occurs
      * */
     /*
-     *void BtEncode(std::string &torrentData);
-     *void BtEncode(QString &torrentData);
+     *void BtEncode(QByteArray &torrentData);
      */
     /* Not implemented */
 }
