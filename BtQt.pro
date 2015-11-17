@@ -7,6 +7,8 @@ CONFIG += console
 CONFIG(debug, debug|release) {
     TARGET = BtQtDebug
     QMAKE_CXXFLAGS_DEBUG += -std=c++11
+
+    SOURCES += test/main.cpp
 } else {
     TARGET = BtQt
     QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -15,13 +17,13 @@ CONFIG(debug, debug|release) {
     QMAKE_LFLAGS_RELEASE += -Ofast -flto -Wl,-rpath,. -Wl,-rpath,/usr/lib64/ \
     -Wl,-rpath,/usr/lib
 
+    SOURCES += src/main.cpp
     RESOURCES += qml/qml.qrc
 }
 
 QT += qml quick script network core
 
-SOURCES += src/main.cpp \
-        src/BtBencode.cpp \
+SOURCES += src/BtBencode.cpp \
         src/BtTorrent.cpp
 
 HEADERS += include/BtBencode.h \
