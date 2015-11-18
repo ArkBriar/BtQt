@@ -1,6 +1,7 @@
 #include "BtBencode.h"
 #include "BtDebug.h"
 #include <QtGlobal>
+#include <QMetaType>
 #include <QDebug>
 
 using namespace BtQt;
@@ -68,7 +69,7 @@ void BtQt::BtDecodeBencodeString(QByteArray const &data, QByteArray &ret)
 }
 
 /* get the last 'e' of a dictionary or list */
-static inline int getLastE(QByteArray const &data, int pos)
+inline int getLastE(QByteArray const &data, int pos)
 {
     int eN = 1, ePos = pos;
     int lastEPos = ePos; // last end postion, 'e', 'i', 'l', 'd', '@strend'
@@ -139,7 +140,10 @@ void BtQt::BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &ret)
                 throw -1;
             }
         } else {
-            ret.push_back(QVariant(v));
+            if(data[pos] == 'i')
+                ret.push_back(v.toLongLong());
+            else
+                ret.push_back(v);
         }
         pos = nPos;
         /* The end */
@@ -210,10 +214,77 @@ void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVari
                 throw -1;
             }
         } else {
-            ret.insert(key, QVariant(v));
+            if(data[pos] == 'i')
+                ret.insert(key, v.toLongLong());
+            else
+                ret.insert(key, v);
         }
         pos = nPos;
         /* The end */
         if(pos >= (int)data.size() - 1) break;
     }
+}
+
+void BtQt::BtEncodeBencodeInteger(qint64 data, QByteArray &ret)
+{
+    ret = "i";
+    ret.append(QString::number(data));
+    ret.append('e');
+}
+
+void BtQt::BtEncodeBencodeString(QByteArray const &data, QByteArray &ret)
+{
+    ret = QByteArray::number(data.size());
+    ret.append(":");
+    ret.append(data);
+}
+
+void BtQt::BtEncodeBencodeList(QList<QVariant> const &data, QByteArray &ret)
+{
+    ret = "l";
+    for (auto i : data) {
+        QByteArray retF;
+        if(i.canConvert(QMetaType::QVariantMap)) {
+            BtEncodeBencodeMap(i.toMap(), retF);
+        } else if(i.canConvert(QMetaType::QVariantList)) {
+            BtEncodeBencodeList(i.toList(), retF);
+        } else if(i.canConvert(QMetaType::QByteArray)) {
+            bool ok;
+            qint64 iValue = i.toByteArray().toLongLong(&ok);
+            if(ok) BtEncodeBencodeInteger(iValue, retF);
+            else BtEncodeBencodeString(i.toByteArray(), retF);
+        } else {
+            qDebug() << "There are unrecognized types in list to encode.";
+            throw -1;
+        }
+        ret.append(retF);
+    }
+    ret.append('e');
+}
+
+void BtQt::BtEncodeBencodeMap(QMap<QString, QVariant> const &data, QByteArray &ret)
+{
+    ret = "d";
+    for (auto key : data.keys()) {
+        QByteArray retF;
+        BtEncodeBencodeString(key.toUtf8(), retF);
+        ret.append(retF);
+
+        auto value = data.value(key);
+        if(value.canConvert(QMetaType::QVariantMap)) {
+            BtEncodeBencodeMap(value.toMap(), retF);
+        } else if(value.canConvert(QMetaType::QVariantList)) {
+            BtEncodeBencodeList(value.toList(), retF);
+        } else if(value.canConvert(QMetaType::QByteArray)) {
+            bool ok;
+            qint64 iValue = value.toByteArray().toLongLong(&ok);
+            if(ok) BtEncodeBencodeInteger(iValue, retF);
+            else BtEncodeBencodeString(value.toByteArray(), retF);
+        } else {
+            qDebug() << "There are unrecognized types in dictionary to encode.";
+            throw -1;
+        }
+        ret.append(retF);
+    }
+    ret.append('e');
 }

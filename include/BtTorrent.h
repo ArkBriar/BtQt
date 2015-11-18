@@ -138,17 +138,14 @@ namespace BtQt {
             void clear();
 
             /* Provide a method to parse torrent file
-             * decodeTorrentFile(QFile const&)
-             * will throw exceptions when error occurs
+             * decodeTorrentFile(QFile &)
              * */
             bool decodeTorrentFile(QFile &torrentFile);
 
             /* Provide a method to parse itself to a torent file
-             * encodeTorrentFile(QFile const&)
-             * will throw exceptions when error occurs
+             * encodeTorrentFile(QFile &)
              * */
-            /* Not implemented */
-            //void encodeTorrentFile(QFile const &torrentFile);
+            bool encodeTorrentFile(QFile &torrentFile);
     };
 }
 

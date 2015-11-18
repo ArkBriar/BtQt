@@ -81,12 +81,64 @@ void BtTorrent::display() const
      */
 }
 
+bool BtTorrent::encodeTorrentFile(QFile &torrentFile)
+{
+    if(!isParsed) {
+        qDebug() << "Can not encode an empty object.";
+        return false;
+    }
+
+    QByteArray encoded;
+    try {
+        /* The pieces's value is sha-1 lists (hex encoded),
+         * so we should join the lists together */
+        QMap<QString, QVariant> tmpInfo = torrentInfo;
+        QByteArray piecesHashList;
+        for(auto i : torrentPieces) {
+            auto pieceHash = QByteArray::fromHex(i.toByteArray());
+            piecesHashList.append(pieceHash);
+        }
+        qDebug() << torrentPieces.size();
+        qDebug() << piecesHashList.size();
+        tmpInfo["pieces"].setValue(piecesHashList);
+        qDebug() << tmpInfo["pieces"].toByteArray().size();
+
+        /* Temperarily change pieces to hashlist */
+        QVariant &tInfo = torrentObject["info"];
+        tInfo.setValue(tmpInfo);
+
+        qDebug() << torrentObject["info"].toMap().value("pieces").toByteArray().size();
+
+        BtEncodeBencodeMap(torrentObject, encoded);
+        qDebug() << encoded.size();
+        /* Change back */
+        tInfo.setValue(torrentInfo);
+    } catch (std::exception e) {
+        qDebug() << "Can not encode this object. Error occurs!";
+        return false;
+    }
+
+    if(!torrentFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Can not open file " << torrentFile.fileName() << " in write-only mode.";
+        return false;
+    }
+
+    if(torrentFile.write(encoded) == -1) {
+        qDebug() << "Can not write to file " << torrentFile.fileName();
+        torrentFile.close();
+        return false;
+    }
+
+    torrentFile.close();
+    return true;
+}
+
 bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
 {
     torrentObject.clear();
     if(!torrentFile.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open file " << torrentFile.fileName() << " in read-only mode.";
-        throw -1;
+        qDebug() << "Can not open file " << torrentFile.fileName() << " in read-only mode.";
+        return false;
     }
 
     QByteArray torrentData = torrentFile.readAll();
@@ -95,7 +147,7 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
     try {
         BtQt::BtDecodeBencodeDictionary(torrentData, torrentObject);
     } catch (std::exception e) {
-        qDebug() << "Cannot decode torrent file " << torrentFile.fileName() << "!";
+        qDebug() << "Can not decode torrent file " << torrentFile.fileName() << "!";
         return false;
     }
 
@@ -130,7 +182,7 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
     /* Build index */
     if(isParsed) {
         torrentInfo = torrentObject.value("info").toMap();
-        tPieces = torrentInfo.value("pieces").toList();
+        torrentPieces = torrentInfo.value("pieces").toList();
     }
 
     return isParsed;
@@ -232,6 +284,13 @@ bool BtTorrent::setValue(QMap<QString, QVariant> &other)
 {
     torrentObject.swap(other);
     isParsed = isValid();
+
+    /* Build index */
+    if(isParsed) {
+        torrentInfo = torrentObject.value("info").toMap();
+        torrentPieces = torrentInfo.value("pieces").toList();
+    }
+
     return isParsed;
 }
 

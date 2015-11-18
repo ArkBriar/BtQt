@@ -24,16 +24,18 @@ CONFIG(debug, debug|release) {
 QT += qml quick script network core
 
 SOURCES += src/BtBencode.cpp \
-        src/BtTorrent.cpp
+        src/BtTorrent.cpp \
+        src/BtTracker.cpp
 
 HEADERS += include/BtBencode.h \
-        include/BtTorrent.h 
+        include/BtTorrent.h \
+        include/BtTracker.h
 
 unix:!macx: {
 # Static librarys
-    LIBS += -Wl,-Bstatic -lcryptopp
+    #LIBS += -Wl,-Bstatic -lcryptopp
 # Dynamic librarys
-    LIBS += -Wl,-Bdynamic
+    #LIBS += -Wl,-Bdynamic
 }
 
 INCLUDEPATH += include/ \

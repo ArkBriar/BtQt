@@ -4,7 +4,8 @@
 
 int main(int argc, char *argv[])
 {
-    QString fileName;
+    bool output_flag = false, input_flag = false;
+    QString fileName, ofileName;
     int choice;
     while (1)
     {
@@ -15,7 +16,8 @@ int main(int argc, char *argv[])
             /* Argument styles: no_argument, required_argument, optional_argument */
             {"version", no_argument,	0,	'v'},
             {"help",	no_argument,	0,	'h'},
-            {"input",	required_argument,	0,	'i'},
+            {"input",	required_argument,	0, 'i'},
+            {"output",  required_argument, 0, 'o'},
 
             {0,0,0,0}
         };
@@ -27,7 +29,7 @@ int main(int argc, char *argv[])
             required_argument: ":"
             optional_argument: "::" */
 
-        choice = getopt_long( argc, argv, "vhi:",
+        choice = getopt_long( argc, argv, "vhi:o:",
                     long_options, &option_index);
 
         if (choice == -1)
@@ -36,8 +38,12 @@ int main(int argc, char *argv[])
         switch( choice )
         {
             case 'i':
-                qDebug() << optarg;
                 fileName = optarg;
+                input_flag = true;
+                break;
+            case 'o':
+                ofileName = optarg;
+                output_flag = true;
                 break;
             case 'v':
 
@@ -75,6 +81,17 @@ int main(int argc, char *argv[])
         qDebug() << "Decode failed!";
     }
     t.display();
+    qDebug() << input_flag << output_flag;
+
+    if(input_flag && output_flag) {
+        QFile file(ofileName);
+        qDebug() << "Encode start...";
+        if(t.encodeTorrentFile(file)) {
+            qDebug() << "Encode succeed!";
+        } else {
+            qDebug() << "Encode failed!";
+        }
+    }
 
     return 0;
 }

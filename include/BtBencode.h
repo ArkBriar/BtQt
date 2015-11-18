@@ -43,7 +43,16 @@ namespace BtQt {
     /*
      *void BtEncode(QByteArray &torrentData);
      */
-    /* Not implemented */
+    void BtEncodeBencodeInteger(qint64 data, QByteArray &);
+    void BtEncodeBencodeString(QByteArray const &, QByteArray &);
+    /* Contents(what in QVariant) must be one of:
+     * Int, String(ByteArray), List<Contents>, Map<String, Contents>
+     * Due to QVariant's problem, when canConvert QByteArray, it will check if
+     * the value can convert to int64. If possible, it will call encode as
+     * integer instead of string
+     * */
+    void BtEncodeBencodeList(QList<QVariant> const &, QByteArray &);
+    void BtEncodeBencodeMap(QMap<QString, QVariant> const&, QByteArray &);
 }
 
 #endif // __BTBENCODE_H__
