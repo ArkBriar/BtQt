@@ -4,6 +4,8 @@ BtQt
 
 This is a simple Qt based Bt client!
 
+[[_TOC_]]
+
 ### Dependencies
 
 + Requires Qt 5.5.1(*tested*) or higher(*not*)
@@ -15,7 +17,7 @@ This is a simple Qt based Bt client!
 **Attention**   It was only tested on openSUSE Tumbleweed. Please post issues if you have problems on other distributions.
 **Notice**      Need gcc 4.8 or higher because of  some C++11 syntax
 
-+ Preparation
+##### **Preparation**
 
 1\. Download & Install [Qt 5.5.1](http://download.qt.io/archive/qt/5.5/5.5.1/)
 
@@ -26,7 +28,7 @@ This is a simple Qt based Bt client!
 sudo aptitude install build-essential libgl1-mesa-dev libglu1-mesa-dev
 ```
 
-+ Compile
+##### **Compile**
 
 ```
 cd BtQt/
@@ -38,14 +40,14 @@ make release
 
 "/path/to/qtbin/" is "/path/to/Qt5.5.1/5.5/gcc_64/bin/" on my machine.
 
-+ Install
+##### **Install**
 
 
 #### Windows
 
 **Attention**   It was only tested on Windows 10. Please post issues if you have problems on other distributions.
 
-+ Preparation & Compile
+##### **Preparation & Compile**
 
 1\. Download and install Visual studio 2015 (must install msvc2013) or Visual studio 2013
 
@@ -56,7 +58,7 @@ make release
 4\. Compile. There are some little problems when running debug version, but you could fix it by modifying macro "DebugQmlSrc" in main.cpp.
 
 
-+ Install
+##### **Install**
 
 
 ### License
