@@ -68,7 +68,7 @@ static void displayQList(QList<QVariant> const &list, int tabs)
     qStdOut(tabs) << "]" << endl;
 }
 
-void BtTorrent::display()
+void BtTorrent::display() const
 {
     if(!isParsed) {
         qDebug() << "BtTorrent object is empty.";
@@ -125,7 +125,111 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
     tInfoVal.insert("pieces", hashList);
     tInfo.setValue(tInfoVal);
 
-    isParsed = true;
+    isParsed = isValid();
+    return isParsed;
+}
+
+bool BtTorrent::isValid()
+{
+    /* Check the standard structure */
+    if(!torrentObject.contains("announce"))
+        return false;
+    if(!torrentObject.contains("info"))
+        return false;
+
+    auto tInfo = torrentObject.value("info");
+
+    if(!tInfo.canConvert(QMetaType::QVariantMap))
+        return false;
+    auto tInfoMap = tInfo.toMap();
+    if(!tInfoMap.contains("name"))
+        return false;
+    if(!tInfoMap.contains("piece length"))
+        return false;
+
+    /* Pieces */
+    if(!tInfoMap.contains("pieces"))
+        return false;
+    auto tPieces = tInfoMap.value("pieces");
+    if(!tPieces.canConvert(QMetaType::QVariantList))
+        return false;
+
+    /* Files
+     * Files only exists when there are multiple files */
+    if(tInfoMap.contains("files")) {
+        /* Multiple files */
+        auto tFiles = tInfoMap.value("files");
+        if(!tFiles.canConvert(QMetaType::QVariantList))
+            return false;
+        auto tFilesList = tFiles.toList();
+        for (auto i : tFilesList) {
+            if(!i.canConvert(QMetaType::QVariantMap))
+                return false;
+            auto tFile = i.toMap();
+            if(!tFile.contains("path") || !tFile.contains("length"))
+                return false;
+            auto tFilePath = tFile.value("path");
+            if(!tFilePath.canConvert(QMetaType::QVariantList))
+                return false;
+        }
+    } else {
+        /* Single file */
+        if(!tInfoMap.contains("length"))
+            return false;
+    }
+
     return true;
 }
 
+QString BtTorrent::announce() const
+{
+    return QString();
+}
+
+QString BtTorrent::name() const
+{
+
+    return QString();
+}
+
+int BtTorrent::pieceLength() const
+{
+
+    return 0;
+}
+
+QList<QString> BtTorrent::pieces() const
+{
+
+    return QList<QString>();
+}
+
+int BtTorrent::length() const
+{
+
+    return 0;
+}
+
+QList<QVariant> BtTorrent::files() const
+{
+
+    return QList<QVariant>();
+}
+
+QMap<QString, QVariant> BtTorrent::value() const
+{
+    return torrentObject;
+}
+
+bool BtTorrent::setValue(QMap<QString, QVariant> &other)
+{
+    torrentObject.swap(other);
+    isParsed = isValid();
+    return isParsed;
+}
+
+void BtTorrent::clear()
+{
+    isParsed = false;
+    torrentObject.clear();
+}
