@@ -4,7 +4,11 @@ BtQt
 
 This is a simple Qt based Bt client!
 
-[[_TOC_]]
+- [Dependencies](#dependencies)
+- [Build Instructions](#build-instructions)
+    - [Linux](#linux)
+    - [Windows](#windows)
+- [License](#license)
 
 ### Dependencies
 
