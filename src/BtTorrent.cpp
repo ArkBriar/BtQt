@@ -126,6 +126,13 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
     tInfo.setValue(tInfoVal);
 
     isParsed = isValid();
+
+    /* Build index */
+    if(isParsed) {
+        torrentInfo = torrentObject.value("info").toMap();
+        tPieces = torrentInfo.value("pieces").toList();
+    }
+
     return isParsed;
 }
 
@@ -183,37 +190,37 @@ bool BtTorrent::isValid()
 
 QString BtTorrent::announce() const
 {
-    return QString();
+    return torrentObject.value("annouce").toByteArray();
 }
 
 QString BtTorrent::name() const
 {
 
-    return QString();
+    return torrentInfo.value("name").toByteArray();
 }
 
 int BtTorrent::pieceLength() const
 {
-
-    return 0;
+    return torrentInfo.value("piece length").toByteArray().toInt();
 }
 
-QList<QString> BtTorrent::pieces() const
+QList<QVariant> BtTorrent::pieces() const
 {
-
-    return QList<QString>();
+    return torrentPieces;
 }
 
 int BtTorrent::length() const
 {
-
-    return 0;
+    if(torrentInfo.contains("files"))
+        return -1;
+    return torrentInfo.value("length").toByteArray().toInt();
 }
 
 QList<QVariant> BtTorrent::files() const
 {
-
-    return QList<QVariant>();
+    if(!torrentInfo.contains("files"))
+        return QList<QVariant>();
+    return torrentInfo.value("files").toList();
 }
 
 QMap<QString, QVariant> BtTorrent::value() const

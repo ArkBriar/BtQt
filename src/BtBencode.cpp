@@ -1,20 +1,7 @@
 #include "BtBencode.h"
+#include "BtDebug.h"
 #include <QtGlobal>
 #include <QDebug>
-
-/* Macros for debug */
-#ifndef QT_NO_DEBUG
-#ifdef __GNUC__
-#define showDebug() \
-    qDebug() << "[DEBUG] " << __PRETTY_FUNCTION__ << __LINE__
-#else
-#define showDebug() \
-    qDebug() << "[DEBUG] " << __FUNCTION__ << __LINE__
-#endif
-
-#else
-#define showDebug()
-#endif
 
 using namespace BtQt;
 
@@ -25,7 +12,6 @@ static bool fastDecode = false;
 /* The two functions below do not handle 'd' and 'l'
  * if error occurs or reach end, return -1 */
 static inline int pickAndDecode(QByteArray const &data, int pos, QByteArray &ret) {
-    showDebug();
     if(pos > (int)data.size() - 1) return -1;
     if(data[pos] != 'i' && data[pos] != 'l' && data[pos] != 'd') {
         // is string
@@ -56,7 +42,6 @@ PICK_AND_DECODE_ERROR:
 
 void BtQt::BtDecodeBencodeInteger(QByteArray const &data, QByteArray &ret)
 {
-    showDebug();
     Q_ASSERT(ret.isEmpty() && !data.isEmpty());
 
     /* The first character must be i */
@@ -69,7 +54,6 @@ void BtQt::BtDecodeBencodeInteger(QByteArray const &data, QByteArray &ret)
 
 void BtQt::BtDecodeBencodeString(QByteArray const &data, QByteArray &ret)
 {
-    showDebug();
     Q_ASSERT(ret.isEmpty() && !data.isEmpty());
 
     int colonPos = data.indexOf(':');
@@ -111,7 +95,6 @@ static inline int getLastE(QByteArray const &data, int pos)
 
 void BtQt::BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &ret)
 {
-    showDebug();
     Q_ASSERT(ret.isEmpty() && !data.isEmpty());
 
 
@@ -166,7 +149,6 @@ void BtQt::BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &ret)
 
 void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVariant> &ret)
 {
-    showDebug();
     Q_ASSERT(ret.isEmpty() && !data.isEmpty());
 
     /* The first character must be d */

@@ -15,20 +15,7 @@
  *#include <QJsonValueRef>
  */
 
-/* Macros for debug */
-#ifndef QT_NO_DEBUG
-#ifdef __GNUC__
-#define showDebug() \
-    qDebug() << "[DEBUG] " << __PRETTY_FUNCTION__ << __LINE__
-#else
-#define showDebug() \
-    qDebug() << "[DEBUG] " << __FUNCTION__ << __LINE__
-#endif
-
-#else
-#define showDebug()
-#endif
-
+#include "BtDebug.h"
 #include "BtBencode.h"
 
 namespace BtQt {
@@ -100,7 +87,9 @@ namespace BtQt {
             //QJsonObject torrentJsonObject;
             QMap<QString, QVariant> torrentObject;
 
-            /* Index, lazy built */
+            /* Index, built when decode done */
+            QMap<QString, QVariant> torrentInfo;
+            QList<QVariant> torrentPieces;
 
             bool isParsed;
 
@@ -123,12 +112,12 @@ namespace BtQt {
             QString announce() const;
             QString name() const;
             int pieceLength() const;
-            QList<QString> pieces() const;
+            QList<QVariant> pieces() const;
             /* When it's a single-file torrent, return empty QList
              * else return with files
              * */
             QList<QVariant> files() const;
-            /* When it's a single-file torrent, return -1
+            /* When it's a multiple-files torrent, return -1
              * else return length
              * */
             int length() const;
