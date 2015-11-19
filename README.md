@@ -57,9 +57,13 @@ make release
 
 2\. Download and install Qt5.5.1, set the build toolkit with msvc2013(v120)
 
-3\. Checkout the windows branch(maybe I will merge it into master branch someday), **open NePlay.pro with QtCreator**
+3\. **open BtQt.pro with QtCreator**
 
-4\. Compile. There are some little problems when running debug version, but you could fix it by modifying macro "DebugQmlSrc" in main.cpp.
+4\. Compile. 
+
+Target 'debug' is compiling with test/main.cpp instead of src/main.cpp. If you find it hard to compile, check it. There should be some GNU codes in it.
+
+There may be some little problems when running debug version, but you could fix it by modifying macro "DebugQmlSrc" in main.cpp.
 
 
 ##### **Install**
