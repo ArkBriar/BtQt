@@ -98,21 +98,15 @@ bool BtTorrent::encodeTorrentFile(QFile &torrentFile)
             auto pieceHash = QByteArray::fromHex(i.toByteArray());
             piecesHashList.append(pieceHash);
         }
-        qDebug() << torrentPieces.size();
-        qDebug() << piecesHashList.size();
         tmpInfo["pieces"].setValue(piecesHashList);
-        qDebug() << tmpInfo["pieces"].toByteArray().size();
 
-        /* Temperarily change pieces to hashlist */
-        QVariant &tInfo = torrentObject["info"];
+        /* Make a copy of torrentObject,
+         * and change pieces to hashlist */
+        QMap<QString, QVariant> tmpObject = torrentObject;
+        QVariant &tInfo = tmpObject["info"];
         tInfo.setValue(tmpInfo);
 
-        qDebug() << torrentObject["info"].toMap().value("pieces").toByteArray().size();
-
-        BtEncodeBencodeMap(torrentObject, encoded);
-        qDebug() << encoded.size();
-        /* Change back */
-        tInfo.setValue(torrentInfo);
+        BtEncodeBencodeMap(tmpObject, encoded);
     } catch (std::exception e) {
         qDebug() << "Can not encode this object. Error occurs!";
         return false;
