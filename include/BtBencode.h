@@ -13,10 +13,13 @@
  * From wikipedia: [https://en.wikipedia.org/wiki/Bencode]
  * * An integer is encoded as i<integer encoded in base ten ASCII>e. (Negative zero is not allowed)
  *   - 42 is `i42e`, -42 is `i-42e`, 0 is `i0e`
+ *
  * * A byte string (a sequence of bytes, not necessarily characters) is encodes as <length>:<contents>. The length is encoded in base 10 (non-negative)
  *   - spam is `4:spam`, network is `7:network`
+ *
  * * A list of values is encoded as l<contents>e. The <contents> consist of the bencoded elements of the list, in order, concatenated.
  *   - A list consisting of the string "spam" and the number 42 would be encoded as: `l4:spami42ee`
+ *
  * * A dictionary is encoded as d<contents>e. Like list, <contents> is encoded in bencode and concatenated.
  *   - dictionary `{"bar":"spam", "foo":42}` would be encoded as follows: `d3:bar4:spam3:fooi42ee`
  * */

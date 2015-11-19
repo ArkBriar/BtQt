@@ -28,10 +28,12 @@
  * - uploaded: The total amount uploaded so far, encoded in base ten ascii.
  *
  * - downloaded: The total amount downloaded so far, encoded in base ten ascii.
+ *
  * - left: The number of bytes this peer still has to download, encoded in
  *   base ten ascii. Note that this can't be computed from downloaded and the
  *   file length since it might be a resume, and there's a chance that some of
  *   the downloaded data failed an integrity check and had to be re-downloaded.
+ *
  * - event: This is an optional key which maps to started, completed, or
  *   stopped (or empty, which is the same as not being present). If not
  *   present, this is one of the announcements done at regular intervals. An a
