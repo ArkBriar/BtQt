@@ -82,8 +82,8 @@ namespace BtQt {
  *   a trackerless torrent has a "nodes" key. For more speicifications please go
  *   to the link above.
  *
- * We plan to support 'announce-list', 'private' and 'httpseeds'.
- * Merkle trees and DHT is not considered.
+ * We plan to support 'announce-list', 'private', 'httpseeds' and DHT.
+ * Merkle trees is not considered.
  */
 
     class BtTorrent {
