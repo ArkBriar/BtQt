@@ -68,6 +68,7 @@ static void displayQList(QList<QVariant> const &list, int tabs)
     qStdOut(tabs) << "]" << endl;
 }
 
+#ifndef QT_NO_DEBUG
 void BtTorrent::display() const
 {
     if(!isParsed) {
@@ -80,6 +81,7 @@ void BtTorrent::display() const
      *qInfo() << torrentObject;
      */
 }
+#endif // QT_NO_DEBUG
 
 bool BtTorrent::encodeTorrentFile(QFile &torrentFile)
 {
@@ -236,7 +238,7 @@ bool BtTorrent::isValid()
 
 QString BtTorrent::announce() const
 {
-    return torrentObject.value("annouce").toByteArray();
+    return torrentObject.value("announce").toByteArray();
 }
 
 QString BtTorrent::name() const
@@ -245,9 +247,9 @@ QString BtTorrent::name() const
     return torrentInfo.value("name").toByteArray();
 }
 
-int BtTorrent::pieceLength() const
+qint64 BtTorrent::pieceLength() const
 {
-    return torrentInfo.value("piece length").toByteArray().toInt();
+    return torrentInfo.value("piece length").toByteArray().toLongLong();
 }
 
 QList<QVariant> BtTorrent::pieces() const
@@ -255,11 +257,11 @@ QList<QVariant> BtTorrent::pieces() const
     return torrentPieces;
 }
 
-int BtTorrent::length() const
+qint64 BtTorrent::length() const
 {
     if(torrentInfo.contains("files"))
         return -1;
-    return torrentInfo.value("length").toByteArray().toInt();
+    return torrentInfo.value("length").toByteArray().toLongLong();
 }
 
 QList<QVariant> BtTorrent::files() const

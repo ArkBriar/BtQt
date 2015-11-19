@@ -1,9 +1,14 @@
-#include <BtTorrent.h>
+#include <QGuiApplication>
 #include <QDebug>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <getopt.h>
+#include <BtQt.h>
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication app(argc, argv);
+
     bool output_flag = false, input_flag = false;
     QString fileName, ofileName;
     int choice;
@@ -84,14 +89,50 @@ int main(int argc, char *argv[])
     qDebug() << input_flag << output_flag;
 
     if(input_flag && output_flag) {
-        QFile file(ofileName);
+        QFile ofile(ofileName);
         qDebug() << "Encode start...";
-        if(t.encodeTorrentFile(file)) {
+        if(t.encodeTorrentFile(ofile)) {
             qDebug() << "Encode succeed!";
         } else {
             qDebug() << "Encode failed!";
         }
     }
 
-    return 0;
+    QByteArray info_hash;
+    BtQt::torrentInfoHash(file, info_hash);
+    if(t.length() == -1) {
+        qDebug() << "Not a single-file torrent!";
+        return app.exec();
+    }
+
+    BtQt::BtTrackerRequest rt(info_hash, "1789ddac3a400ee34089",
+            6881, 0, 0, t.length());
+    rt.display();
+    QNetworkAccessManager nam;
+    QUrl trackerUrl = QUrl(t.announce());
+    qDebug() << QString(rt.toRequestData());
+    trackerUrl.setQuery(QString(rt.toRequestData()));
+    qDebug() << trackerUrl;
+    QNetworkRequest rq(QUrl(t.announce()));
+    rq.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+
+    void replyTest(QNetworkReply *);
+    QObject::connect(&nam, &QNetworkAccessManager::finished, &replyTest);
+    nam.get(rq);
+
+    return app.exec();
+}
+
+void replyTest(QNetworkReply *reply)
+{
+    function_debug();
+    /* There is some error */
+    if(reply->error() != QNetworkReply::NoError) {
+        qDebug() << "[Reply] There is some error!";
+        qDebug() << reply->errorString();
+        return;
+    }
+
+    auto data = reply->readAll();
+    qDebug() << data;
 }

@@ -3,7 +3,7 @@
 #ifndef __BTTRACKER_H__
 #define __BTTRACKER_H__
 
-/* This is an implementation of BitTorrent tracker */
+/* This is an implementation of BitTorrent tracker request data */
 
 /* According to BPE [http://www.bittorrent.org/beps/bep_0003.html]
  * Tracker GET requests have the following keys:
@@ -47,16 +47,26 @@
 #include <QString>
 #include <QFile>
 #include <QHostAddress>
+#include <QNetworkRequest>
+#include <QUrl>
 
 namespace BtQt {
-    /* Trackers event */
-    enum class BtTrackerEvent {
+    /* Download event */
+    enum class BtTrackerDownloadEvent {
+        /* empty is a default state*/
+        empty = 0,
         started,
         completed,
         stopped
     };
 
-    class BtTracker {
+    /* Provide a function to calculate the info hash of a torrent file
+     * This function will set info_hash if succeed,
+     * and it will throw -1 when error occurs
+     * */
+    void torrentInfoHash(QFile &torrentFile, QByteArray &);
+
+    class BtTrackerRequest {
         private:
             /* Tracker data */
             /* The variables are named as the protocol said.
@@ -68,21 +78,47 @@ namespace BtQt {
             quint64 uploaded;
             quint64 downloaded;
             quint64 left;
-            BtTrackerEvent event;
+            BtTrackerDownloadEvent event;
 
+            /* This request will be built when first toRequestData is called!
+             * Every time new data setted, this request will be cleared.
+             * Next time toRequest called, it will be generated automatically.
+             * */
+            QByteArray requestData;
+            bool requestDataGenerated;
         public:
+            BtTrackerRequest();
+            /* ip is optional, so it's the default value of QHostAddress when not
+             * presented;
+             * event has a option 'empty'*/
+            BtTrackerRequest(QByteArray const &, QByteArray const &, quint16, quint64, quint64, quint64, QHostAddress const & = QHostAddress(), BtTrackerDownloadEvent = BtTrackerDownloadEvent::empty);
             /* Methods */
-            /* Provide a function to calculate the info hash of a torrent file
-             * This function will set info_hash if succeed,
-             * and it will throw -1 when error occurs
-             * */
-            void torrentInfoHash(QFile torrentFile);
+            void setInfoHash(QByteArray const &);
+            void setPeerId(QByteArray const &);
+            void setIp(QHostAddress const &);
+            void setPort(quint16 port);
+            void setUploaded(quint64);
+            void setDownloaded(quint64);
+            void setLeft(quint64);
+            void setEvent(BtTrackerDownloadEvent);
 
-            /* Provide a function to encode itself to Bencode
-             * It will throw -1 when error occurs
+            /* I think it's not necessary to expose all data to access.
              * */
-            void BencodeEncode(QByteArray &);
+            QByteArray getInfoHash();
+            QByteArray getPeerId();
+            QHostAddress getIp();
+            quint16 getPort();
+
+#ifndef QT_NO_DEBUG
+            /* display what is in this request */
+            void display();
+#endif
+
+            /* Get request consists of info_hash, peer_id, ip, port, uploaded,
+             * downloaded, left and event */
+            const QByteArray& toRequestData();
     };
+
 }
 
 #endif // __BTTRACKER_H__

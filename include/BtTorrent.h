@@ -111,15 +111,17 @@ namespace BtQt {
             BtTorrent() : isParsed(false) {}
 
             /* Methods */
+#ifndef QT_NO_DEBUG
             /* Provide a method to print the data
              * display()
              * */
             void display() const;
+#endif // QT_NO_DEBUG
 
             /* Get specific data from torrent object */
             QString announce() const;
             QString name() const;
-            int pieceLength() const;
+            qint64 pieceLength() const;
             QList<QVariant> pieces() const;
             /* When it's a single-file torrent, return empty QList
              * else return with files
@@ -128,7 +130,7 @@ namespace BtQt {
             /* When it's a multiple-files torrent, return -1
              * else return length
              * */
-            int length() const;
+            qint64 length() const;
 
             /* Set value
              * This function would always destory data in the argument
