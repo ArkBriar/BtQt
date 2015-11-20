@@ -48,6 +48,9 @@ namespace BtQt {
  *         "path": a list of strings corresponding to subdirectory names, the last
  *         of which is the actual file name
  *         "length": size of the file in bytes.
+ *         "md5sum": (optional) a 32-character hexadecimal string corresponding
+ *         to the MD5 sum of the file. This is not used by BitTorrent at all,
+ *         but it is included by some programs for greater compatibility.
  *       }
  *   }
  * }
@@ -86,6 +89,22 @@ namespace BtQt {
  * Merkle trees is not considered.
  */
 
+/* All above are necessary info. There are some optional kyes:
+ *
+ * - creation date: the creation time of the torrent, in standard UNIX epoch
+ *   format (integer, seconds since 1-Jan-1970 00:00:00 UTC)
+ *
+ * - comment: free-form textual comments of the author (string)
+ *
+ * - created by: name and version of the program use to create the .torrent (string)
+ *
+ * - encoding: (optional) the string encoding format used to generate the pieces
+ *   part of the info dictionary in the .torrent metafile (string)
+ *
+ * I have no idea what values encoding has, so it's not under consideration.
+ * This program will sign it's own torrents with 'creation date', 'created by: BtQt [Version]', 'comment'(optional)
+ * */
+
     class BtTorrent {
         private:
             /* Data
@@ -122,15 +141,41 @@ namespace BtQt {
             QString announce() const;
             QString name() const;
             qint64 pieceLength() const;
-            QList<QVariant> pieces() const;
+            QList<QByteArray> pieces() const;
             /* When it's a single-file torrent, return empty QList
              * else return with files
              * */
-            QList<QVariant> files() const;
+            QList<QMap<QString, QVariant>> files() const;
             /* When it's a multiple-files torrent, return -1
              * else return length
              * */
             qint64 length() const;
+
+            /* Optional information
+             * Return empty structure when not found in meta object,
+             * and return -1 when type is int, false when bool
+             * */
+            QList<QString> announceList() const;
+            bool isPrivate() const;
+            QList<QString> httpseeds() const;
+            /* For DHT */
+            QList<QPair<QString, int>> nodes() const;
+
+            QString creationDate() const;
+            QString comment() const;
+            QString createdBy() const;
+#ifndef BT_NO_DEPRECATED_FUNCTION
+            QString encoding() const;
+#endif // BT_NO_DEPRECATED_FUNCTION
+
+            /* Provide some funtions to set part of those options */
+            void setCreationDate(QString const &);
+            void setComment(QString const &);
+            void setCreateBy(QString const &);
+#ifndef BT_NO_DEPRECATED_FUNCTION
+            /* Encodint will never take effect in BtQt */
+            void setEncoding(QString const &);
+#endif // BT_NO_DEPRECATED_FUNCTION
 
             /* Set value
              * This function would always destory data in the argument

@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
     QUrl trackerUrl = QUrl(t.announce());
 
     try {
-        BtQt::sendTrackerRequest(rt, trackerUrl);
+        qDebug() << BtQt::sendTrackerRequest(rt, trackerUrl);
     } catch (int e) {
         qDebug() << "Can not get tracker reply! Some problem with your network!";
     }

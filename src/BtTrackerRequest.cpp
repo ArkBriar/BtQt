@@ -248,10 +248,10 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
     if(trackerReply.isEmpty()) {
         qDebug() << "Warnning! We got an empty reply!";
     }
-#ifndef QT_NO_DEBUG
-    qDebug() << trackerReply;
-#endif // QT_NO_DEBUG
 
-    return trackerReply;
+    /* Get the reply data */
+    int replyIdx = trackerReply.indexOf("\r\n\r\n") + 4;
+
+    return trackerReply.mid(replyIdx);
 }
 

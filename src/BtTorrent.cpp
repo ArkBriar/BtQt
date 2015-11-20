@@ -252,9 +252,14 @@ qint64 BtTorrent::pieceLength() const
     return torrentInfo.value("piece length").toByteArray().toLongLong();
 }
 
-QList<QVariant> BtTorrent::pieces() const
+QList<QByteArray> BtTorrent::pieces() const
 {
-    return torrentPieces;
+    QList<QByteArray> ret;
+    for (auto i : torrentPieces) {
+        ret.append(i.toByteArray());
+    }
+
+    return ret;
 }
 
 qint64 BtTorrent::length() const
@@ -264,11 +269,18 @@ qint64 BtTorrent::length() const
     return torrentInfo.value("length").toByteArray().toLongLong();
 }
 
-QList<QVariant> BtTorrent::files() const
+QList<QMap<QString, QVariant>> BtTorrent::files() const
 {
     if(!torrentInfo.contains("files"))
-        return QList<QVariant>();
-    return torrentInfo.value("files").toList();
+        return QList<QMap<QString, QVariant>>();
+    auto fileList =  torrentInfo.value("files").toList();
+
+    QList<QMap<QString, QVariant>> ret;
+    for (auto i : fileList) {
+        ret.append(i.toMap());
+    }
+
+    return ret;
 }
 
 QMap<QString, QVariant> BtTorrent::value() const
@@ -294,4 +306,125 @@ void BtTorrent::clear()
 {
     isParsed = false;
     torrentObject.clear();
+}
+
+bool BtTorrent::isPrivate() const
+{
+    if(!torrentInfo.contains("private")) return false;
+    bool ok;
+    int privateVal = torrentInfo.value("private").toInt(&ok);
+    if(ok && privateVal == 1) return true;
+
+    return false;
+}
+
+QString BtTorrent::creationDate() const
+{
+    if(!torrentObject.contains("creation date")) return QString();
+
+    if(torrentObject.value("creation date").canConvert(QMetaType::QString))
+        return torrentObject.value("creation date").toString();
+
+    return QString();
+}
+
+QString BtTorrent::comment() const
+{
+    if(!torrentObject.contains("comment")) return QString();
+
+    if(torrentObject.value("comment").canConvert(QMetaType::QString))
+        return torrentObject.value("comment").toString();
+    return QString();
+}
+
+QString BtTorrent::createdBy() const
+{
+    if(!torrentObject.contains("created by")) return QString();
+
+    if(torrentObject.value("created by").canConvert(QMetaType::QString))
+        return torrentObject.value("created by").toString();
+    return QString();
+}
+
+QList<QString> BtTorrent::announceList() const
+{
+    if(!torrentObject.contains("announce-list")) return QList<QString>();
+
+    if(torrentObject.value("announce-list").canConvert(
+                QMetaType::QVariantList)) {
+        QList<QString> ret;
+        for (auto i : torrentObject.value("announce-list").toList()) {
+            /* I have to say that always check is not a good choice.
+             * Shit, there are so much to check. */
+            ret.append(i.toString());
+        }
+        return ret;
+    }
+
+    return QList<QString>();
+}
+
+QList<QString> BtTorrent::httpseeds() const
+{
+    if(!torrentObject.contains("httpseeds")) return QList<QString>();
+
+    if(torrentObject.value("httpseeds").canConvert(QMetaType::QVariantList)) {
+        QList<QString> ret;
+        for (auto i : torrentObject.value("httpseeds").toList()) {
+            ret.append(i.toString());
+        }
+        return ret;
+    }
+
+    return QList<QString>();
+}
+
+QList<QPair<QString, int>> BtTorrent::nodes() const
+{
+    if(!torrentObject.contains("nodes") ||
+            !torrentObject.value("nodes").canConvert(QMetaType::QVariantList))
+        return QList<QPair<QString ,int>>();
+
+    auto nodesList = torrentObject.value("nodes").toList();
+    QList<QPair<QString, int>> ret;
+
+    for (auto i : nodesList) {
+        auto host_port = i.toList();
+        QString host = host_port.at(0).toString();
+        int port = host_port.at(1).toInt();
+        ret.append(QPair<QString, int>(host, port));
+    }
+
+    return ret;
+}
+
+#ifndef BT_NO_DEPRECATED_FUNCTION
+QString BtTorrent::encoding() const
+{
+    if(!torrentObject.contains("encoding")) return QString();
+
+    if(torrentObject.value("encoding").canConvert(QMetaType::QString))
+        return torrentObject.value("encoding").toString();
+    return QString();
+}
+
+void BtTorrent::setEncoding(QString const &encoding)
+{
+    torrentObject.insert("encoding", encoding);
+}
+#endif // BT_NO_DEPRECATED_FUNCTION
+
+void BtTorrent::setCreationDate(QString const &date)
+{
+    torrentObject.insert("creation date", date);
+}
+
+void BtTorrent::setComment(QString const &comment)
+{
+    torrentObject.insert("comment", comment);
+}
+
+void BtTorrent::setCreateBy(QString const &tool)
+{
+    torrentObject.insert("created by", tool);
 }
