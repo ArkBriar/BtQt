@@ -43,6 +43,34 @@
  *   -ent using stopped when they cease downloading.
  * */
 
+/* Some optional keys not in bep, but may be used by some trackers.
+ *
+ * - compact: Setting this to 1 indicates that the client accepts a compact
+ *   response. The peers list is replaced by a peers string with 6 bytes per
+ *   peer. The first four bytes are the host (in network byte order), the last
+ *   two bytes are the port (again in network byte order). It should be noted
+ *   that some trackers only support compact responses (for saving bandwidth)
+ *   and either refuse requests without "compact=1" or simply send a compact
+ *   response unless the request contains "compact=0" (in which case they will
+ *   refuse the request.)
+ *
+ * - no_peer_id: Indicates that the tracker can omit peer id field in peers
+ *   dictionary. This option is ignored if compact is enabled.
+ *
+ * - numwant: Optional. Number of peers that the client would like to receive
+ *   from the tracker. This value is permitted to be zero. If omitted, typically
+ *   defaults to 50 peers.
+ *
+ * - key: Optional. An additional client identification mechanism that is not
+ *   shared with any peers. It is intended to allow a client to prove their
+ *   identity when their ip address changed.
+ *
+ * - trackerid: Optional. If a previous announce contained a tracker id, it
+ *   should be set here.
+ *
+ * no_peer_id, compact, numwant is under consideration.
+ */
+
 #include <QByteArray>
 #include <QString>
 #include <QFile>
@@ -80,6 +108,12 @@ namespace BtQt {
             quint64 left;
             BtTrackerDownloadEvent event;
 
+            /* Optional */
+            bool compact;
+            bool no_peer_id;
+            int numwant;
+
+
             /* This request will be built when first toRequestData is called!
              * Every time new data setted, this request will be cleared.
              * Next time toRequest called, it will be generated automatically.
@@ -102,11 +136,18 @@ namespace BtQt {
             void setLeft(quint64);
             void setEvent(BtTrackerDownloadEvent);
 
+            void setCompact(bool);
+            void setNoPeerId(bool);
+            void setNumwant(int);
+
             /* I think it's not necessary to expose all data to access. */
             QByteArray getInfoHash() const;
             QByteArray getPeerId() const;
             QHostAddress getIp() const;
             quint16 getPort() const;
+            bool isCompact() const;
+            bool isNoPeerId() const;
+            int getNumwant() const;
 
 #ifndef QT_NO_DEBUG
             /* display what is in this request */

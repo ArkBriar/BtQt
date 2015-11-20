@@ -43,7 +43,7 @@ void BtQt::torrentInfoHash(QFile &torrentFile, QByteArray &ret)
 }
 
 BtTrackerRequest::BtTrackerRequest() : event(BtTrackerDownloadEvent::empty),
-    requestDataGenerated(false)
+    compact(false), no_peer_id(false), numwant(50), requestDataGenerated(false)
 {
 
 }
@@ -54,6 +54,7 @@ BtTrackerRequest::BtTrackerRequest(QByteArray const &info_hash,
         BtTrackerDownloadEvent event) :
     info_hash(info_hash), peer_id(peer_id), ip(ip), port(port),
     uploaded(uploaded), downloaded(downloaded), left(left), event(event),
+    compact(false), no_peer_id(false), numwant(50),
     requestDataGenerated(false)
 {
 
@@ -79,32 +80,66 @@ void BtTrackerRequest::setIp(QHostAddress const &ip)
 
 void BtTrackerRequest::setPort(quint16 port)
 {
+    if(port == this->port) return;
+
     requestDataGenerated = false;
     this->port = port;
 }
 
 void BtTrackerRequest::setUploaded(quint64 uploaded)
 {
+    if(uploaded == this->uploaded) return;
+
     requestDataGenerated = false;
     this->uploaded = uploaded;
 }
 
 void BtTrackerRequest::setDownloaded(quint64 downloaded)
 {
+    if(downloaded == this->downloaded) return;
+
     requestDataGenerated = false;
     this->downloaded = downloaded;
 }
 
 void BtTrackerRequest::setLeft(quint64 left)
 {
+    if(left == this->left) return;
+
     requestDataGenerated = false;
     this->left = left;
 }
 
 void BtTrackerRequest::setEvent(BtTrackerDownloadEvent event)
 {
+    if(event == this->event) return;
+
     requestDataGenerated = false;
     this->event = event;
+}
+
+void BtTrackerRequest::setCompact(bool compact)
+{
+    if(compact == this->compact) return;
+
+    requestDataGenerated = false;
+    this->compact = compact;
+}
+
+void BtTrackerRequest::setNoPeerId(bool no_peer_id)
+{
+    if(no_peer_id == this->no_peer_id) return;
+
+    requestDataGenerated = false;
+    this->no_peer_id = no_peer_id;
+}
+
+void BtTrackerRequest::setNumwant(int numwant)
+{
+    if(numwant == this->numwant) return;
+
+    requestDataGenerated = false;
+    this->numwant = numwant;
 }
 
 QByteArray BtTrackerRequest::getInfoHash() const
@@ -133,6 +168,21 @@ quint16 BtTrackerRequest::getPort() const
     return port;
 }
 
+bool BtTrackerRequest::isCompact() const
+{
+    return compact;
+}
+
+bool BtTrackerRequest::isNoPeerId() const
+{
+    return no_peer_id;
+}
+
+int BtTrackerRequest::getNumwant() const
+{
+    return numwant;
+}
+
 #ifndef QT_NO_DEBUG
 void BtTrackerRequest::display() const
 {
@@ -144,6 +194,10 @@ void BtTrackerRequest::display() const
     qDebug() << "downloaded: " << downloaded;
     qDebug() << "left: " << left;
     qDebug() << "event" << (int)event;
+
+    qDebug() << "compact: " << compact;
+    qDebug() << "no_peer_id: " << no_peer_id;
+    qDebug() << "numwant: " << numwant;
 }
 #endif // QT_NO_DEBUG
 
@@ -194,6 +248,11 @@ const QByteArray& BtTrackerRequest::toRequestData() const
             /* same as empty */
                 break;
         }
+
+        if(compact) params.addQueryItem("compact", compact?"1":"0");
+        else if(no_peer_id) params.addQueryItem("no_peer_id", no_peer_id?"1":"0");
+        if(numwant != 50) params.addQueryItem("numwant", QByteArray::number(numwant));
+
         const_cast<QByteArray &>(requestData).append(params.query(QUrl::EncodeUnicode));
         const_cast<bool &>(requestDataGenerated) = true;
     }
