@@ -100,7 +100,13 @@ int main(int argc, char *argv[])
     }
 
     QByteArray info_hash;
-    BtQt::torrentInfoHash(file, info_hash);
+    try {
+        BtQt::torrentInfoHash(file, info_hash);
+    } catch (int e) {
+        qDebug() << "Can not calculate the info hash of file " << file.fileName();
+        return app.exec();
+    }
+
     if(t.length() == -1) {
         qDebug() << "Not a single-file torrent!";
         return app.exec();
@@ -111,11 +117,11 @@ int main(int argc, char *argv[])
     rt.display();
     QUrl trackerUrl = QUrl(t.announce());
 
-    BtQt::sendTrackerRequest(rt, trackerUrl);
-
-    /*
-     *nam.get(rq);
-     */
+    try {
+        BtQt::sendTrackerRequest(rt, trackerUrl);
+    } catch (int e) {
+        qDebug() << "Can not get tracker reply! Some problem with your network!";
+    }
 
     return app.exec();
 }

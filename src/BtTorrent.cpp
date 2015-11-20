@@ -109,7 +109,7 @@ bool BtTorrent::encodeTorrentFile(QFile &torrentFile)
         tInfo.setValue(tmpInfo);
 
         BtEncodeBencodeMap(tmpObject, encoded);
-    } catch (std::exception e) {
+    } catch (int e) {
         qDebug() << "Can not encode this object. Error occurs!";
         return false;
     }
@@ -142,7 +142,7 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
 
     try {
         BtQt::BtDecodeBencodeDictionary(torrentData, torrentObject);
-    } catch (std::exception e) {
+    } catch (int e) {
         qDebug() << "Can not decode torrent file " << torrentFile.fileName() << "!";
         return false;
     }

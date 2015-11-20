@@ -34,7 +34,7 @@ void BtQt::torrentInfoHash(QFile &torrentFile, QByteArray &ret)
     QByteArray info;
     try {
         info = infoInMetadata(metadata);
-    } catch (std::exception e) {
+    } catch (int e) {
         qDebug() << "Can not find \'info\' section in torrent metadata. Torrent is broken.";
         throw -1;
     }
@@ -218,7 +218,7 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
      */
     socket.connectToHost(host, port);
     if(!socket.waitForConnected(1000)) {
-        qDebug() << "Can not establish tcp connection to " + host + ":" + "port";
+        qDebug() << "Can not establish tcp connection to"  << host + ":" + QString::number(port);
         throw -1;
     }
     socket.setSocketOption(QAbstractSocket::KeepAliveOption, 1);

@@ -53,7 +53,7 @@
 namespace BtQt {
     /* Download event */
     enum class BtTrackerDownloadEvent {
-        /* empty is a default state*/
+        /* empty is a default state */
         empty = 0,
         started,
         completed,
@@ -90,7 +90,7 @@ namespace BtQt {
             BtTrackerRequest();
             /* ip is optional, so it's the default value of QHostAddress when not
              * presented;
-             * event has a option 'empty'*/
+             * event has a option 'empty' */
             BtTrackerRequest(QByteArray const &, QByteArray const &, quint16, quint64, quint64, quint64, QHostAddress const & = QHostAddress(), BtTrackerDownloadEvent = BtTrackerDownloadEvent::empty);
             /* Methods */
             void setInfoHash(QByteArray const &);
@@ -102,8 +102,7 @@ namespace BtQt {
             void setLeft(quint64);
             void setEvent(BtTrackerDownloadEvent);
 
-            /* I think it's not necessary to expose all data to access.
-             * */
+            /* I think it's not necessary to expose all data to access. */
             QByteArray getInfoHash() const;
             QByteArray getPeerId() const;
             QHostAddress getIp() const;

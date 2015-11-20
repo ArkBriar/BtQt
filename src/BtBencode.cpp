@@ -20,7 +20,7 @@ static inline int pickAndDecode(QByteArray const &data, int pos, QByteArray &ret
         int len = data.mid(pos, colonPos - pos).toInt();
         try {
             BtDecodeBencodeString(data.mid(pos, colonPos - pos + len + 1), ret);
-        } catch (std::exception e){
+        } catch (int e){
             qDebug() << "Bencode string decode error, the input is: " << data.mid(pos, colonPos - pos + len + 1);
             goto PICK_AND_DECODE_ERROR;
         }
@@ -30,7 +30,7 @@ static inline int pickAndDecode(QByteArray const &data, int pos, QByteArray &ret
         int ePos = data.indexOf('e', pos);
         try {
             BtDecodeBencodeInteger(data.mid(pos, ePos - pos + 1), ret);
-        } catch (std::exception e) {
+        } catch (int e) {
             qDebug() << "Bencode string decode error, the input is: " << data.mid(pos, ePos - pos + 1);
             goto PICK_AND_DECODE_ERROR;
         }
@@ -123,7 +123,7 @@ void BtQt::BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &ret)
                     try {
                         BtDecodeBencodeList(data.mid(pos, ePos - pos + 1), vList);
                         ret.push_back(QVariant(vList));
-                    } catch (std::exception e) {
+                    } catch (int e) {
                         qDebug() << "Bencode List decode error, the input is: " << data.mid(pos, ePos - pos + 1);
                         return;
                     }
@@ -132,7 +132,7 @@ void BtQt::BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &ret)
                     try {
                         BtDecodeBencodeDictionary(data.mid(pos, ePos - pos + 1), vMap);
                         ret.push_back(QVariant(vMap));
-                    } catch (std::exception e) {
+                    } catch (int e) {
                         qDebug() << "Bencode Map decode error, the input is: " << data.mid(pos, ePos - pos + 1);
                     }
                 }
@@ -194,7 +194,7 @@ void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVari
                     try {
                         BtDecodeBencodeList(data.mid(pos, ePos - pos + 1), vList);
                         ret.insert(key, QVariant(vList));
-                    } catch (std::exception e) {
+                    } catch (int e) {
                         qDebug() << "Bencode List decode error, the input is: " << data.mid(pos, ePos - pos + 1);
                         return;
                     }
@@ -203,7 +203,7 @@ void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVari
                     try {
                         BtDecodeBencodeDictionary(data.mid(pos, ePos - pos + 1), vMap);
                         ret.insert(key, QVariant(vMap));
-                    } catch (std::exception e) {
+                    } catch (int e) {
                         qDebug() << "Bencode Map decode error, the input is: " << data.mid(pos, ePos - pos + 1);
                     }
                 }
