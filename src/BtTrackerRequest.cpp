@@ -1,4 +1,4 @@
-#include <BtTracker.h>
+#include <BtQt.h>
 #include <QCryptographicHash>
 #include <QUrlQuery>
 #include <QTcpSocket>
@@ -226,7 +226,7 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
     /* HTTP 1.1 header, for more information please go to RFC2616 */
     QByteArray header;
     header.append("HOST: " + host + ":" + QString::number(port) + "\r\n");
-    header.append("User-Agent: BtQt 0.1 beta\r\n");
+    header.append("User-Agent: " + BtQt::application + " " + BtQt::version + "\r\n");
     header.append("Accept: */*\r\n");
     header.append("Connection: Keep-Alive\r\n");
     header.append("\r\n");

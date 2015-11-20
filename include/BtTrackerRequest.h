@@ -119,7 +119,12 @@ namespace BtQt {
             const QByteArray& toRequestData() const;
     };
 
-    /* Provide a function to send request to the tracker server */
+    /* Provide a function to send request to the tracker server
+     * It will throw exceptions when error following errors occured:
+     * - Socket connect failed
+     * - Socket read failed
+     * It will warn when get an empty reply
+     * */
     QByteArray sendTrackerRequest(BtTrackerRequest const &, QUrl trackerUrl);
 }
 
