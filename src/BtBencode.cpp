@@ -225,6 +225,31 @@ void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVari
     }
 }
 
+void BtQt::BtDecode(QByteArray const &data, QVariant &ret) {
+    Q_ASSERT(ret.isNull());
+
+    if(data[0] == 'i') {
+        QByteArray i;
+        BtDecodeBencodeInteger(data, i);
+        ret.setValue(i);
+    }
+    else if (data[0] == 'l') {
+        QList<QVariant> l;
+        BtDecodeBencodeList(data, l);
+        ret.setValue(l);
+    }
+    else if (data[0] == 'd') {
+        QMap<QString, QVariant> d;
+        BtDecodeBencodeDictionary(data, d);
+        ret.setValue(d);
+    }
+    else {
+        QByteArray s;
+        BtDecodeBencodeString(data, s);
+        ret.setValue(s);
+    }
+}
+
 void BtQt::BtEncodeBencodeInteger(qint64 data, QByteArray &ret)
 {
     ret = "i";

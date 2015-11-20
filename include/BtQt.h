@@ -7,6 +7,7 @@
 #include <BtTrackerRequest.h>
 #include <BtDebug.h>
 #include <BtBencode.h>
+#include <BtPeer.h>
 
 namespace BtQt {
     const QString application = "BtQt";

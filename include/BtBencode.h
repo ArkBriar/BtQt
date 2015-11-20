@@ -28,9 +28,7 @@ namespace BtQt {
     /* Provide two sets of functions to decode from the torrent data
      * These functions will throw exceptions if error occurs
      * */
-    /*
-     *void BtDecode(QByteArray &torrentData);
-     */
+    void BtDecode(QByteArray const &data, QVariant &);
 
     void BtDecodeBencodeInteger(QByteArray const &data, QByteArray &);
 
@@ -43,10 +41,8 @@ namespace BtQt {
     /* Provide two sets of functions to encode data to the torrent data
      * These functions will throw exceptions if error occurs
      * */
-    /*
-     *void BtEncode(QByteArray &torrentData);
-     */
     void BtEncodeBencodeInteger(qint64 data, QByteArray &);
+
     void BtEncodeBencodeString(QByteArray const &, QByteArray &);
     /* Contents(what in QVariant) must be one of:
      * Int, String(ByteArray), List<Contents>, Map<String, Contents>
@@ -55,6 +51,7 @@ namespace BtQt {
      * integer instead of string
      * */
     void BtEncodeBencodeList(QList<QVariant> const &, QByteArray &);
+
     void BtEncodeBencodeMap(QMap<QString, QVariant> const&, QByteArray &);
 }
 
