@@ -1,6 +1,8 @@
 #include <BtTracker.h>
 #include <QCryptographicHash>
 #include <QUrlQuery>
+#include <QTcpSocket>
+#include <QAbstractSocket>
 
 using namespace BtQt;
 
@@ -105,7 +107,7 @@ void BtTrackerRequest::setEvent(BtTrackerDownloadEvent event)
     this->event = event;
 }
 
-QByteArray BtTrackerRequest::getInfoHash()
+QByteArray BtTrackerRequest::getInfoHash() const
 {
     if(info_hash.isEmpty()) {
         qDebug() << "Requesting an empty info hash!";
@@ -113,7 +115,7 @@ QByteArray BtTrackerRequest::getInfoHash()
     return info_hash;
 }
 
-QByteArray BtTrackerRequest::getPeerId()
+QByteArray BtTrackerRequest::getPeerId() const
 {
     if(peer_id.isEmpty()) {
         qDebug() << "Requesting an empty peer id!";
@@ -121,18 +123,18 @@ QByteArray BtTrackerRequest::getPeerId()
     return peer_id;
 }
 
-QHostAddress BtTrackerRequest::getIp()
+QHostAddress BtTrackerRequest::getIp() const
 {
     return ip;
 }
 
-quint16 BtTrackerRequest::getPort()
+quint16 BtTrackerRequest::getPort() const
 {
     return port;
 }
 
 #ifndef QT_NO_DEBUG
-void BtTrackerRequest::display()
+void BtTrackerRequest::display() const
 {
     qDebug() << "info_hash: " << info_hash.toHex();
     qDebug() << "peer_id: " << peer_id;
@@ -163,11 +165,11 @@ static QString urlencodeUnicode(QByteArray const &in)
     return ret;
 }
 
-const QByteArray& BtTrackerRequest::toRequestData()
+const QByteArray& BtTrackerRequest::toRequestData() const
 {
     /* If not generated or out of date */
     if(!requestDataGenerated) {
-        requestData.clear();
+        const_cast<QByteArray &>(requestData).clear();
         /* generate */
         QUrlQuery params;
         params.addQueryItem("info_hash", urlencodeUnicode(info_hash));
@@ -192,12 +194,64 @@ const QByteArray& BtTrackerRequest::toRequestData()
             /* same as empty */
                 break;
         }
-        qDebug() << urlencodeUnicode(info_hash);
-        qDebug() << params.query(QUrl::EncodeUnicode);
-        requestData.append(params.query(QUrl::EncodeUnicode));
-        qDebug() << requestData;
-        requestDataGenerated = true;
+        const_cast<QByteArray &>(requestData).append(params.query(QUrl::EncodeUnicode));
+        const_cast<bool &>(requestDataGenerated) = true;
     }
 
     return requestData;
 }
+
+QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl)
+{
+    /* For the reason that QUrl has used RFC3986 instead of RFC 1738,
+     * I have to emulate an HTTP GET request using tcp socket. */
+    QTcpSocket socket;
+    QString host = trackerUrl.host();
+    quint16 port = trackerUrl.port();
+#ifndef QT_NO_DEBUG
+    qDebug() << "Host: " << host;
+    qDebug() << "Port: " << port;
+#endif // QT_NO_DEBUG
+    /*
+     *QString host = trackerUrl.toEncoded(QUrl::RemoveScheme | QUrl::RemovePath
+     *        | QUrl::RemoveAuthority);
+     */
+    socket.connectToHost(host, port);
+    if(!socket.waitForConnected(1000)) {
+        qDebug() << "Can not establish tcp connection to " + host + ":" + "port";
+        throw -1;
+    }
+    socket.setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+
+    /* HTTP 1.1 header, for more information please go to RFC2616 */
+    QByteArray header;
+    header.append("HOST: " + host + ":" + QString::number(port) + "\r\n");
+    header.append("User-Agent: BtQt 0.1 beta\r\n");
+    header.append("Accept: */*\r\n");
+    header.append("Connection: Keep-Alive\r\n");
+    header.append("\r\n");
+
+    QByteArray string = "GET " + trackerUrl.toEncoded(QUrl::RemoveScheme | QUrl::RemoveAuthority) + "?" + req.toRequestData() + " HTTP/1.1\r\n";
+
+#ifndef QT_NO_DEBUG
+    qDebug() << "Header: " << header;
+    qDebug() << "String: " << string;
+#endif // QT_NO_DEBUG
+
+    socket.write(string + header);
+
+    if(!socket.waitForReadyRead(1000)) {
+        qDebug() << "There were some error occured or possibly time out! Can not get reply!";
+        throw -1;
+    }
+    QByteArray trackerReply = socket.readAll();
+    if(trackerReply.isEmpty()) {
+        qDebug() << "Warnning! We got an empty reply!";
+    }
+#ifndef QT_NO_DEBUG
+    qDebug() << trackerReply;
+#endif // QT_NO_DEBUG
+
+    return trackerReply;
+}
+

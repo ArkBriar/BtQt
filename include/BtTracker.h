@@ -104,21 +104,23 @@ namespace BtQt {
 
             /* I think it's not necessary to expose all data to access.
              * */
-            QByteArray getInfoHash();
-            QByteArray getPeerId();
-            QHostAddress getIp();
-            quint16 getPort();
+            QByteArray getInfoHash() const;
+            QByteArray getPeerId() const;
+            QHostAddress getIp() const;
+            quint16 getPort() const;
 
 #ifndef QT_NO_DEBUG
             /* display what is in this request */
-            void display();
+            void display() const;
 #endif
 
             /* Get request consists of info_hash, peer_id, ip, port, uploaded,
              * downloaded, left and event */
-            const QByteArray& toRequestData();
+            const QByteArray& toRequestData() const;
     };
 
+    /* Provide a function to send request to the tracker server */
+    QByteArray sendTrackerRequest(BtTrackerRequest const &, QUrl trackerUrl);
 }
 
 #endif // __BTTRACKER_H__

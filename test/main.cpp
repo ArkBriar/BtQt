@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <BtQt.h>
 
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -108,17 +109,13 @@ int main(int argc, char *argv[])
     BtQt::BtTrackerRequest rt(info_hash, "1789ddac3a400ee34089",
             6881, 0, 0, t.length());
     rt.display();
-    QNetworkAccessManager nam;
     QUrl trackerUrl = QUrl(t.announce());
-    qDebug() << QString(rt.toRequestData());
-    trackerUrl.setQuery(QString(rt.toRequestData()));
-    qDebug() << trackerUrl;
-    QNetworkRequest rq(QUrl(t.announce()));
-    rq.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    void replyTest(QNetworkReply *);
-    QObject::connect(&nam, &QNetworkAccessManager::finished, &replyTest);
-    nam.get(rq);
+    BtQt::sendTrackerRequest(rt, trackerUrl);
+
+    /*
+     *nam.get(rq);
+     */
 
     return app.exec();
 }
