@@ -113,29 +113,32 @@ int main(int argc, char *argv[])
 
     if(t.length() == -1) {
         qDebug() << "Not a single-file torrent!";
-        return app.exec();
-    }
 
-    BtQt::BtTrackerRequest rt(info_hash, BtQt::generatePeerId(),
-            6881, 0, 0, t.length());
-    rt.display();
-    QUrl trackerUrl = QUrl(t.announce());
+        /* Here's the multifile test */
+        return 0;
+    } else {
+        /* Here's the single-file test */
+        BtQt::BtTrackerRequest rt(info_hash, BtQt::generatePeerId(),
+                6881, 0, 0, t.length());
+        rt.display();
+        QUrl trackerUrl = QUrl(t.announce());
 
-    QByteArray trackerRes;
-    try {
-         trackerRes = BtQt::sendTrackerRequest(rt, trackerUrl);
-         qDebug() << trackerRes;
-    } catch (int e) {
-        qDebug() << "Can not get tracker reply! Some problem with your network!";
-    }
-
-    if(!trackerRes.isEmpty()) {
+        QByteArray trackerRes;
         try {
-            BtQt::BtTrackerResponse res(
-                    BtQt::parseTrackerResponse(trackerRes));
-            res.display();
+            trackerRes = BtQt::sendTrackerRequest(rt, trackerUrl);
+            qDebug() << trackerRes;
         } catch (int e) {
-            qDebug() << "Can not parse tracker's response";
+            qDebug() << "Can not get tracker reply! Some problem with your network!";
+        }
+
+        if(!trackerRes.isEmpty()) {
+            try {
+                BtQt::BtTrackerResponse res(
+                        BtQt::parseTrackerResponse(trackerRes));
+                res.display();
+            } catch (int e) {
+                qDebug() << "Can not parse tracker's response";
+            }
         }
     }
 
