@@ -112,15 +112,27 @@ int main(int argc, char *argv[])
         return app.exec();
     }
 
-    BtQt::BtTrackerRequest rt(info_hash, "1789ddac3a400ee34089",
+    BtQt::BtTrackerRequest rt(info_hash, "5assddac3a4iles34h89",
             6881, 0, 0, t.length());
     rt.display();
     QUrl trackerUrl = QUrl(t.announce());
 
+    QByteArray trackerRes;
     try {
-        qDebug() << BtQt::sendTrackerRequest(rt, trackerUrl);
+         trackerRes = BtQt::sendTrackerRequest(rt, trackerUrl);
+         qDebug() << trackerRes;
     } catch (int e) {
         qDebug() << "Can not get tracker reply! Some problem with your network!";
+    }
+
+    if(!trackerRes.isEmpty()) {
+        try {
+            BtQt::BtTrackerResponse res(
+                    BtQt::parseTrackerResponse(trackerRes));
+            res.display();
+        } catch (int e) {
+            qDebug() << "Can not parse tracker's response";
+        }
     }
 
     return app.exec();

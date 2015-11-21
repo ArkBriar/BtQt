@@ -266,7 +266,7 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
      * I have to emulate an HTTP GET request using tcp socket. */
     QTcpSocket socket;
     QString host = trackerUrl.host();
-    quint16 port = trackerUrl.port();
+    quint16 port = trackerUrl.port(80);
 #ifndef QT_NO_DEBUG
     qDebug() << "Host: " << host;
     qDebug() << "Port: " << port;
@@ -290,7 +290,12 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
     header.append("Connection: Keep-Alive\r\n");
     header.append("\r\n");
 
-    QByteArray string = "GET " + trackerUrl.toEncoded(QUrl::RemoveScheme | QUrl::RemoveAuthority) + "?" + req.toRequestData() + " HTTP/1.1\r\n";
+    QByteArray string;
+    if(trackerUrl.hasQuery()) {
+        string = "GET " + trackerUrl.toEncoded(QUrl::RemoveScheme | QUrl::RemoveAuthority) + '&' + req.toRequestData() + " HTTP/1.1\r\n";
+    } else {
+        string = "GET " + trackerUrl.toEncoded(QUrl::RemoveScheme | QUrl::RemoveAuthority) + '?' + req.toRequestData() + " HTTP/1.1\r\n";
+    }
 
 #ifndef QT_NO_DEBUG
     qDebug() << "Header: " << header;
@@ -318,12 +323,66 @@ QMap<QString, QVariant> BtQt::parseTrackerResponse(QByteArray const &response)
 {
     QMap<QString, QVariant> ret;
 
-    BtDecodeBencodeDictionary(response, ret);
+    /* This bencoded dictionary is weired.
+     * Shit, the peers will be decoded specially
+     * */
+    int peersIdx = response.indexOf("5:peers");
+    BtDecodeBencodeDictionary(response.mid(0, peersIdx), ret);
+
+    QByteArray peers;
+    peers.append(response.mid(peersIdx + 7, response.size() - peersIdx - 8));
+
+    QMap<QString, QVariant> peer;
+    QList<QVariant> peerList;
+    bool haveId = false;
+    if(peers.at(0) == '7') haveId = true;
+    for(auto i = 0; peers.at(i) != 'e'; ) {
+        if(haveId == true) {
+            if(peers.at(i) == '7') {
+                /* peer id */
+                i += 7 + 2;
+                /* id is string, 20 */
+                i += 3;
+                peer.insert("peer id", peers.mid(i, 20));
+                i += 20;
+            } else {
+                qDebug() << "There's shit in trackers response";
+                throw -1;
+            }
+        }
+        if(peers.at(i) == '2') {
+            /* ip */
+            i += 2 + 2;
+            int colonIdx = peers.indexOf(':', i);
+            int ipLen = peers.mid(i, colonIdx - i).toInt();
+            i = colonIdx + 1;
+            peer.insert("ip", peers.mid(i, ipLen));
+            i += ipLen;
+        } else {
+            qDebug() << "There's shit in trackers response";
+            throw -1;
+        }
+
+        if(peers.at(i) == '4') {
+            /* port */
+            i += 4 + 2;
+            int eIdx = peers.indexOf('e', i);
+            peer.insert("port", peers.mid(i + 1, eIdx - i - 1));
+            i = eIdx + 1;
+        } else {
+            qDebug() << "There's shit in trackers response";
+            throw -1;
+        }
+        peerList.append(peer);
+    }
+
+    ret.insert("peers", peerList);
 
     return ret;
 }
 
 BtTrackerResponse::BtTrackerResponse(QMap<QString, QVariant> const &response)
+    : Interval(-1), Complete(-1), InComplete(-1), MinInterval(-1)
 {
     /* Check if failed */
     if(response.contains("failure reason")) {
@@ -439,7 +498,15 @@ void BtTrackerResponse::display() const
     qDebug() << "tracker id: " << TrackerId;
     qDebug() << "complete: " << Complete;
     qDebug() << "incomplete: " << InComplete;
+
     qDebug() << "peers: " << Peers;
+    /*
+     *for (auto i : Peers) {
+     *    qDebug() << "ip: " << i.value("ip").toByteArray();
+     *    qDebug() << "port: " << i.value("port").toInt();
+     *}
+     */
+
     qDebug() << "min interval: " << MinInterval;
 }
 #endif // QT_NO_DEBUG
