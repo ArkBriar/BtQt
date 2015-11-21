@@ -179,6 +179,9 @@ void BtQt::BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVari
         /* Get Value */
         QByteArray v;
         nPos = pickAndDecode(data, pos, v);
+        if(nPos >= data.size()) {
+            qDebug() << "Warning: The dictionary is not complete, must lost the last \'e\'";
+        }
         if(nPos == -1) { // check if 'l' or 'd'
             if(data[pos] == 'l' || data[pos] == 'd') {
                 // find correspond 'e'

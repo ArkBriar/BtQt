@@ -327,7 +327,12 @@ QMap<QString, QVariant> BtQt::parseTrackerResponse(QByteArray const &response)
      * Shit, the peers will be decoded specially
      * */
     int peersIdx = response.indexOf("5:peers");
-    BtDecodeBencodeDictionary(response.mid(0, peersIdx), ret);
+    if(peersIdx != -1)
+        BtDecodeBencodeDictionary(response.mid(0, peersIdx).append('e'), ret);
+    else {
+        BtDecodeBencodeDictionary(response, ret);
+        return ret;
+    }
 
     QByteArray peers;
     peers.append(response.mid(peersIdx + 7, response.size() - peersIdx - 8));
