@@ -314,3 +314,132 @@ QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl
     return trackerReply.mid(replyIdx);
 }
 
+QMap<QString, QVariant> BtQt::parseTrackerResponse(QByteArray const &response)
+{
+    QMap<QString, QVariant> ret;
+
+    BtDecodeBencodeDictionary(response, ret);
+
+    return ret;
+}
+
+BtTrackerResponse::BtTrackerResponse(QMap<QString, QVariant> const &response)
+{
+    /* Check if failed */
+    if(response.contains("failure reason")) {
+        failureReason = response.value("failure reason").toString();
+    } else {
+        if(response.contains("warning message")) {
+            warningMessage = response.value("warning message").toString();
+        }
+
+        if(response.contains("interval")) {
+            Interval = response.value("interval").toInt();
+        } else {
+            qDebug() << "Warning: There's no interval in tracker's response";
+            Interval = -1;
+        }
+
+        if(response.contains("min interval")) {
+            MinInterval = response.value("min interval").toInt();
+        } else {
+            MinInterval = -1;
+        }
+
+        if(response.contains("tracker id")) {
+            TrackerId = response.value("tracker id").toByteArray();
+        }
+
+        if(response.contains("complete")) {
+            Complete = response.value("complete").toInt();
+        } else {
+            Complete = -1;
+        }
+
+        if(response.contains("incomplete")) {
+            InComplete = response.value("incomplete").toInt();
+        } else {
+            InComplete = -1;
+        }
+
+        if(response.contains("peers")) {
+            if(response.value("peers").canConvert(QMetaType::QVariantList)) {
+                /* Dictionary model */
+                auto _Peers = response.value("peers").toList();
+                for(auto i : _Peers) {
+                    Peers.append(i.toMap());
+                }
+            } else {
+                /* Binary model */
+                auto _Peers = response.value("peers").toByteArray();
+                QMap<QString, QVariant> _Peer;
+                for (auto i = 0; i < _Peers.size(); i += 6) {
+                    _Peer.insert("ip", _Peers.at(i) + '.' + _Peers.at(i + 1) + '.'                            + _Peers.at(i + 2) + '.' + _Peers.at(i + 3));
+                    _Peer.insert("port", _Peers.mid(i + 4, 2).toInt());
+                    Peers.append(_Peer);
+                }
+            }
+        }
+    }
+}
+
+int BtTrackerResponse::interval() const
+{
+    return Interval;
+}
+
+QByteArray BtTrackerResponse::trackerId() const
+{
+    return TrackerId;
+}
+
+int BtTrackerResponse::complete() const
+{
+    return Complete;
+}
+
+int BtTrackerResponse::incomplete() const
+{
+    return InComplete;
+}
+
+auto BtTrackerResponse::peers()->decltype(Peers) const
+{
+    return Peers;
+}
+
+int BtTrackerResponse::minInterval() const
+{
+    return MinInterval;
+}
+
+bool BtTrackerResponse::failed(QString &reason) const
+{
+    if(failureReason.isEmpty()) return false;
+    else if(Peers.isEmpty()) {
+        reason = failureReason;
+    }
+    return true;
+}
+
+bool BtTrackerResponse::warned(QString &warning) const
+{
+    if(warningMessage.isEmpty()) return false;
+    warning = warningMessage;
+    return true;
+}
+
+#ifndef QT_NO_DEBUG
+void BtTrackerResponse::display() const
+{
+    qDebug() << "failure reason: " << failureReason;
+    qDebug() << "warning message: " << warningMessage;
+
+    qDebug() << "interval: " << Interval;
+    qDebug() << "tracker id: " << TrackerId;
+    qDebug() << "complete: " << Complete;
+    qDebug() << "incomplete: " << InComplete;
+    qDebug() << "peers: " << Peers;
+    qDebug() << "min interval: " << MinInterval;
+}
+#endif // QT_NO_DEBUG

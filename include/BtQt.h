@@ -4,7 +4,7 @@
 #define __BTQT_H__
 
 #include <BtTorrent.h>
-#include <BtTrackerRequest.h>
+#include <BtTracker.h>
 #include <BtDebug.h>
 #include <BtBencode.h>
 #include <BtPeer.h>
