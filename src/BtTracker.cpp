@@ -266,6 +266,13 @@ const QByteArray& BtTrackerRequest::toRequestData() const
 
 QByteArray BtQt::sendTrackerRequest(BtTrackerRequest const &req, QUrl trackerUrl)
 {
+    if(trackerUrl.scheme() != "http") {
+        /* There may be "udp" or "https" or other schemes,
+         * but not supported now */
+        qDebug() << "Request to announce" << trackerUrl;
+        qDebug() << "Protocol not supported!";
+        return QByteArray();
+    }
     /* For the reason that QUrl has used RFC3986 instead of RFC 1738,
      * I have to emulate an HTTP GET request using tcp socket. */
     QTcpSocket socket;

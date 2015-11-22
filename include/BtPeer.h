@@ -194,7 +194,7 @@ namespace BtQt {
             /* Distinguish local with remote */
             bool IsRemote;
         public:
-            BtPeer(bool = false);
+            BtPeer(BtTorrent const &, bool = false);
             BtPeer(BtTorrent const &, QByteArray const &,
                     QHostAddress const &, quint16 = 6881, bool = false);
 
@@ -220,6 +220,8 @@ namespace BtQt {
             void setTorrent(BtTorrent const &);
             void setIsRemote(bool);
 
+            void pieceOk(int);
+
             /* Get peer info */
             QByteArray getPeerId() const;
             QHostAddress getIp() const;
@@ -230,6 +232,7 @@ namespace BtQt {
             bool peerChoking() const;
             bool peerInterested() const;
             QBitArray getPieceBitArray() const;
+            bool havePiece(int) const;
             bool isRemote() const;
 
     };
