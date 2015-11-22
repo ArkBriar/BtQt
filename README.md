@@ -2,7 +2,7 @@ BtQt
 -----------
 [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
 
-This is a simple Qt based Bt client!
+This is a simple Qt based Bitorrent client!
 
 - [Dependencies](#dependencies)
 - [Build Instructions](#build-instructions)
@@ -19,6 +19,7 @@ This is a simple Qt based Bt client!
 #### Linux
 
 **Attention**   It was only tested on openSUSE Tumbleweed. Please post issues if you have problems on other distributions.
+
 **Notice**      Need gcc 4.8 or higher because of  some C++11 syntax
 
 ##### **Preparation**
@@ -61,7 +62,7 @@ make release
 
 4\. Compile. 
 
-Target 'debug' is compiling with test/main.cpp instead of src/main.cpp. If you find it hard to compile, check it. There should be some GNU codes in it.
+Target 'debug' is compiling with test/main.cpp instead of src/main.cpp. If you find it hard to compile, check it. There should be some UNIX-style codes in it.
 
 There may be some little problems when running debug version, but you could fix it by modifying macro "DebugQmlSrc" in main.cpp.
 
