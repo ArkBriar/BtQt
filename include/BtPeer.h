@@ -199,19 +199,19 @@ namespace BtQt {
                     QHostAddress const &, quint16 = 6881, bool = false);
 
             /* These are all over TCP */
-            void handshake(BtPeer const &) const;
+            QByteArray handshake(BtPeer const &) const;
             /* Implementation of messages */
-            void keepAlive(BtPeer const &) const;
-            void choke(BtPeer const &) const;
-            void unchoke(BtPeer const &) const;
-            void interested(BtPeer const &) const;
-            void notInterested(BtPeer const &) const;
-            void have(BtPeer const &) const;
-            void bitfield(BtPeer const &) const;
-            void request(BtPeer const &) const;
-            void piece(BtPeer const &) const;
-            void cancel(BtPeer const &) const;
-            void port(BtPeer const &) const;
+            QByteArray keepAlive(BtPeer const &) const;
+            QByteArray choke(BtPeer const &) const;
+            QByteArray unchoke(BtPeer const &) const;
+            QByteArray interested(BtPeer const &) const;
+            QByteArray notInterested(BtPeer const &) const;
+            QByteArray have(BtPeer const &, int) const;
+            QByteArray bitfield(BtPeer const &) const;
+            QByteArray request(BtPeer const &, int, qint64, qint64) const;
+            QByteArray piece(BtPeer const &, int, qint64, qint64) const;
+            QByteArray cancel(BtPeer const &, int, qint64, qint64) const;
+            QByteArray port(BtPeer const &, quint16) const;
 
             /* Set peer data */
             void setPeerId(QByteArray const &);

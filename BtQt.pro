@@ -26,12 +26,14 @@ QT += qml quick script network core
 SOURCES += src/BtBencode.cpp \
         src/BtTorrent.cpp \
         src/BtTracker.cpp \
-        src/BtPeer.cpp
+        src/BtPeer.cpp \
+        src/BtCore.cpp
 
 HEADERS += include/BtBencode.h \
         include/BtTorrent.h \
         include/BtTracker.h \
-        include/BtPeer.h
+        include/BtPeer.h \
+        include/BtCore.h
 
 unix:!macx: {
 # Static librarys

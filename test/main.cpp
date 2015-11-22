@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
         return app.exec();
     }
 
-    BtQt::BtTrackerRequest rt(info_hash, "5assddac3a4iles34h89",
+    BtQt::BtTrackerRequest rt(info_hash, BtQt::generatePeerId(),
             6881, 0, 0, t.length());
     rt.display();
     QUrl trackerUrl = QUrl(t.announce());

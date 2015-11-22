@@ -8,6 +8,7 @@
 #include <BtDebug.h>
 #include <BtBencode.h>
 #include <BtPeer.h>
+#include <BtCore.h>
 
 namespace BtQt {
     const QString application = "BtQt";
