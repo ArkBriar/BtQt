@@ -125,6 +125,8 @@ namespace BtQt {
              * */
             bool isValid();
 
+            QByteArray info_hash;
+
         public:
             /* Construct with isParsed be false */
             BtTorrent() : isParsed(false) {}
@@ -168,6 +170,8 @@ namespace BtQt {
             QString encoding() const;
 #endif // BT_NO_DEPRECATED_FUNCTION
 
+            QByteArray infoHash() const;
+
             /* Provide some funtions to set part of those options */
             void setCreationDate(QString const &);
             void setComment(QString const &);
@@ -184,6 +188,9 @@ namespace BtQt {
              * */
             bool setValue(QMap<QString, QVariant> &);
 
+            /* Set info_hash */
+            void setInfoHash(QByteArray const &);
+
             /* get a copy of value */
             QMap<QString, QVariant> value() const;
 
@@ -194,6 +201,7 @@ namespace BtQt {
 
             /* Provide a method to parse torrent file
              * decodeTorrentFile(QFile &)
+             * This function will also set the info_hash
              * */
             bool decodeTorrentFile(QFile &torrentFile);
 

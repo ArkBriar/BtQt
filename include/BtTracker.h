@@ -93,6 +93,10 @@ namespace BtQt {
      * and it will throw -1 when error occurs
      * */
     void torrentInfoHash(QFile &torrentFile, QByteArray &);
+    /* This function will set info_hash if succeed,
+     * and will do nothing when failed
+     * */
+    void torrentInfoHash(QByteArray const &torrentMetaData, QByteArray &);
 
     class BtTrackerRequest {
         private:

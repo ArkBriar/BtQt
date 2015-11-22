@@ -31,14 +31,18 @@ void BtQt::torrentInfoHash(QFile &torrentFile, QByteArray &ret)
     QByteArray metadata = torrentFile.readAll();
     torrentFile.close();
 
+    torrentInfoHash(metadata, ret);
+}
+
+void BtQt::torrentInfoHash(QByteArray const &torrentMetadata, QByteArray &ret)
+{
     QByteArray info;
     try {
-        info = infoInMetadata(metadata);
+        info = infoInMetadata(torrentMetadata);
     } catch (int e) {
         qDebug() << "Can not find \'info\' section in torrent metadata. Torrent is broken.";
-        throw -1;
+        return;
     }
-
     ret = QCryptographicHash::hash(info, QCryptographicHash::Sha1);
 }
 

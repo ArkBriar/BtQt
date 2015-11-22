@@ -1,4 +1,4 @@
-#include "BtTorrent.h"
+#include <BtQt.h>
 #include <QByteArray>
 #include <QIODevice>
 #include <QDebug>
@@ -142,6 +142,8 @@ bool BtTorrent::decodeTorrentFile(QFile &torrentFile)
 
     try {
         BtQt::BtDecodeBencodeDictionary(torrentData, torrentObject);
+        /* Calculate and set info_hash */
+        BtQt::torrentInfoHash(torrentData, info_hash);
     } catch (int e) {
         qDebug() << "Can not decode torrent file " << torrentFile.fileName() << "!";
         return false;
@@ -414,6 +416,11 @@ void BtTorrent::setEncoding(QString const &encoding)
 }
 #endif // BT_NO_DEPRECATED_FUNCTION
 
+QByteArray BtTorrent::infoHash() const
+{
+    return info_hash;
+}
+
 void BtTorrent::setCreationDate(QString const &date)
 {
     torrentObject.insert("creation date", date);
@@ -428,3 +435,9 @@ void BtTorrent::setCreateBy(QString const &tool)
 {
     torrentObject.insert("created by", tool);
 }
+
+void BtTorrent::setInfoHash(QByteArray const &info_hash)
+{
+    this->info_hash = info_hash;
+}
+

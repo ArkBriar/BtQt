@@ -4,11 +4,15 @@
 #include <QNetworkReply>
 #include <getopt.h>
 #include <BtQt.h>
+#include <QDateTime>
 
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    /* Initialize for qrand */
+    qsrand(QDateTime().currentMSecsSinceEpoch());
 
     bool output_flag = false, input_flag = false;
     QString fileName, ofileName;
