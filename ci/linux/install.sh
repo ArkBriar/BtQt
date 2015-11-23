@@ -18,12 +18,15 @@ wget http://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt5_54/qt.54
 
 export CC="gcc-4.8"
 export CXX="g++-4.8"
-export QTHOME=$PWD/5.4/gcc_64/
+export LINK=$CXX
+export QTHOME=$PWD/5.4/gcc_64
 export QTBIN=$PWD/5.4/gcc_64/bin
 export QMAKESPEC=$PWD/5.4/gcc_64/mkspecs/linux-g++
 
 # Add qt.conf to enable qmake
 echo "[Paths]
 Prefix=.." > $QTBIN/qt.conf
+
+ls -l $QTHOME/lib/
 
 popd

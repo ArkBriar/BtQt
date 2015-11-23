@@ -4,11 +4,18 @@ CONFIG += debug_and_release \
 
 CONFIG += console
 
+# Use enviroment variable
 QMAKE_CXX = $$(CXX)
-
 isEmpty(QMAKE_CXX) {
     QMAKE_CXX = g++
 }
+QMAKE_LINK = $$(LINK)
+isEmpty(QMAKE_LINK) {
+    QMAKE_LINK = g++
+}
+
+# Add rpaht-link for build in container
+QMAKE_LFLAGS += -Wl,-rpath-link,$$(QTHOME)/lib
 
 CONFIG(debug, debug|release) {
     TARGET = BtQtDebug
@@ -20,7 +27,8 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -Ofast -flto -fno-strict-aliasing -std=c++11
     QMAKE_LFLAGS_RELEASE -= -Wl,-O1
-    QMAKE_LFLAGS_RELEASE += -Ofast -flto -Wl,-rpath,. -Wl,-rpath,/usr/lib64/ \
+    QMAKE_LFLAGS_RELEASE += -Ofast -flto 
+#   QMAKE_LFLAGS_RELEASE += -Wl,-rpath,. -Wl,-rpath,/usr/lib64/ \
     -Wl,-rpath,/usr/lib
 
     SOURCES += src/main.cpp
