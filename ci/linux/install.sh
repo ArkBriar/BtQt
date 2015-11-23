@@ -18,6 +18,6 @@ wget http://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt5_54/qt.54
 
 export CC="gcc-4.8"
 export CXX="g++-4.8"
-export PATH=$PWD/5.5/gcc_64/bin:$PATH
+export QTBIN=$PWD/5.5/gcc_64/bin
 
 popd

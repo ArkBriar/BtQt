@@ -3,7 +3,9 @@ set -ev
 
 # Configure and build with Qt5
 pushd build
-qmake ..
+qmake --version
+$QTBIN/qmake --version
+$QTBIN/qmake ..
 make
 popd
 
