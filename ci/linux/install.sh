@@ -27,6 +27,4 @@ export QMAKESPEC=$PWD/5.4/gcc_64/mkspecs/linux-g++
 echo "[Paths]
 Prefix=.." > $QTBIN/qt.conf
 
-ls -l $QTHOME/lib/
-
 popd

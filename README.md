@@ -6,6 +6,7 @@ This is a simple Qt based Bitorrent client!
 - [Build Instructions](#build-instructions)
     - [Linux](#linux)
     - [Windows](#windows)
+- [Release Notes](#release-notes)
 - [License](#license)
 
 ### Dependencies
@@ -16,9 +17,9 @@ This is a simple Qt based Bitorrent client!
 
 #### Linux
 
-**Attention**   It was only tested on openSUSE Tumbleweed. Please post issues if you have problems on other distributions.
-
 **Notice**      Need gcc 4.8 or higher because of  some C++11 syntax
+
+It was only tested on openSUSE Tumbleweed. Please post issues if you have problems on other distributions.
 
 ##### **Preparation**
 
@@ -33,22 +34,24 @@ sudo aptitude install build-essential libgl1-mesa-dev libglu1-mesa-dev
 
 ##### **Compile**
 
-```
-cd BtQt/
-mkdir build
-cd build/
-/path/to/qtbin/qmake ../BtQt.pro
-make release
+``` shell
+$ cd BtQt/
+$ mkdir build
+$ cd build/
+$ /path/to/qtbin/qmake ..
+$ make release
 ```
 
 "/path/to/qtbin/" is "/path/to/Qt5.5.1/5.5/gcc_64/bin/" on my machine.
 
 ##### **Install**
 
+Installation has not be considered.
+
 
 #### Windows
 
-**Attention**   It was only tested on Windows 10. Please post issues if you have problems on other distributions.
+It was only tested on Windows 10. Please post issues if you have problems on other distributions.
 
 ##### **Preparation & Compile**
 
@@ -56,7 +59,7 @@ make release
 
 2\. Download and install Qt5.5.1, set the build toolkit with msvc2013(v120)
 
-3\. **open BtQt.pro with QtCreator**
+3\. Open BtQt.pro with QtCreator
 
 4\. Compile. 
 
@@ -64,9 +67,20 @@ Target 'debug' is compiling with test/main.cpp instead of src/main.cpp. If you f
 
 There may be some little problems when running debug version, but you could fix it by modifying macro "DebugQmlSrc" in main.cpp.
 
-
 ##### **Install**
 
+Installation has not be considered.
+
+### Release Notes
+
+The release packages are all compiled in Travis-CI with
+
+- OS: ubuntu 12.04.5 LTS
+- CC: gcc-4.8
+- CXX: g++-4.8
+- Qt: Qt5.4.2
+
+So if there are some problems, please send an email to me.
 
 ### License
 
