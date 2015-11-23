@@ -1,6 +1,4 @@
-BtQt
------------
-[![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+#BtQt [![Build Status][travis-img]][travis] [![License](https://img.shields.io/badge/license-LGPLv2.1%2B-blue.svg)](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
 
 This is a simple Qt based Bitorrent client!
 
