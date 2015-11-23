@@ -27,7 +27,7 @@ CONFIG(debug, debug|release) {
     RESOURCES += qml/qml.qrc
 }
 
-QT += qml quick script network core
+QT += qml quick network core
 
 SOURCES += src/BtBencode.cpp \
         src/BtTorrent.cpp \
