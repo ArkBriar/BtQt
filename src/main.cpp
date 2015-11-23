@@ -5,7 +5,7 @@
 #include <BtTorrent.h>
 
 #ifndef QT_NO_DEBUG
-#define DebugQmlSrc(qmlfile) "../qml/"#qmlfile
+#define DebugQmlSrc(qmlfile) "../ui/qml/"#qmlfile
 #endif
 
 int main(int argc, char *argv[])
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 #ifdef QT_NO_DEBUG
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:qml/main.qml")));
 #else
     engine.load(QUrl(QUrl::fromLocalFile(DebugQmlSrc(main.qml))));
 #endif

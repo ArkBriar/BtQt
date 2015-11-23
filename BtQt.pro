@@ -2,8 +2,6 @@ TEMPLATE = app
 
 CONFIG += debug_and_release \
 
-CONFIG += console
-
 # Use enviroment variable
 QMAKE_CXX = $$(CXX)
 isEmpty(QMAKE_CXX) {
@@ -18,6 +16,7 @@ isEmpty(QMAKE_LINK) {
 QMAKE_LFLAGS += -Wl,-rpath-link,$$(QTHOME)/lib
 
 CONFIG(debug, debug|release) {
+    CONFIG += console
     TARGET = BtQtDebug
     QMAKE_CXXFLAGS_DEBUG += -std=c++11
 
@@ -32,7 +31,7 @@ CONFIG(debug, debug|release) {
     -Wl,-rpath,/usr/lib
 
     SOURCES += src/main.cpp
-    RESOURCES += qml/qml.qrc
+    RESOURCES += ui/qml/qml.qrc
 }
 
 QT += qml quick network core
