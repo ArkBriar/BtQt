@@ -4,6 +4,12 @@ CONFIG += debug_and_release \
 
 CONFIG += console
 
+QMAKE_CXX = $$(CXX)
+
+isEmpty(QMAKE_CXX) {
+    QMAKE_CXX = g++
+}
+
 CONFIG(debug, debug|release) {
     TARGET = BtQtDebug
     QMAKE_CXXFLAGS_DEBUG += -std=c++11

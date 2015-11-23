@@ -20,6 +20,4 @@ export CC="gcc-4.8"
 export CXX="g++-4.8"
 export PATH=$PWD/5.5/gcc_64/bin:$PATH
 
-sudo update-alternatives --install $(which g++) g++ $(which g++-4.8) 100
-
 popd
