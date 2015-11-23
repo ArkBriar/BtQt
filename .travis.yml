@@ -1,0 +1,25 @@
+os:
+  - linux
+
+branches:
+  master
+
+language: cpp
+
+before_install: . ci/$TRAVIS_OS_NAME/before_install.sh
+install: . ci/$TRAVIS_OS_NAME/install.sh
+script: . ci/$TRAVIS_OS_NAME/script.sh
+after_success:
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && . tools/ci/$TRAVIS_OS_NAME/after_success.sh || true'
+
+addons:
+  apt:
+    sources:
+     - ubuntu-toolchain-r-test
+    packages:
+     - gcc-4.8
+     - g++-4.8
+     - p7zip-full
+
+
+
