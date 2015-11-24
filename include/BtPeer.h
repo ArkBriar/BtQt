@@ -71,7 +71,7 @@
  * - interested: <len=0001><id=2>
  *   The interested message is fixed-length and has no payload.
  *
- * - not interested: <len=0001><id=2>
+ * - not interested: <len=0001><id=3>
  *   The not interested message is fixed-length and has no payload.
  *
  * - have: <len=0005><id=4><piece index>
@@ -199,19 +199,21 @@ namespace BtQt {
                     QHostAddress const &, quint16 = 6881, bool = false);
 
             /* These are all over TCP */
-            QByteArray handshake(BtPeer const &) const;
+            QByteArray handshake() const;
             /* Implementation of messages */
-            QByteArray keepAlive(BtPeer const &) const;
-            QByteArray choke(BtPeer const &) const;
-            QByteArray unchoke(BtPeer const &) const;
-            QByteArray interested(BtPeer const &) const;
-            QByteArray notInterested(BtPeer const &) const;
-            QByteArray have(BtPeer const &, int) const;
-            QByteArray bitfield(BtPeer const &) const;
-            QByteArray request(BtPeer const &, int, qint64, qint64) const;
-            QByteArray piece(BtPeer const &, int, qint64, qint64) const;
-            QByteArray cancel(BtPeer const &, int, qint64, qint64) const;
-            QByteArray port(BtPeer const &, quint16) const;
+            QByteArray keepAlive() const;
+            QByteArray choke() const;
+            QByteArray unchoke() const;
+            QByteArray interested() const;
+            QByteArray notInterested() const;
+            QByteArray have(int index) const;
+            QByteArray bitfield() const;
+            QByteArray request(int index, qint64 begin, qint64 length) const;
+            /* pieceData is correspongding to piece of index */
+            QByteArray piece(int index, qint64 begin, qint64 length,
+                    QByteArray const& pieceData) const;
+            QByteArray cancel(int index, qint64 begin, qint64 length) const;
+            QByteArray port(quint16 listenPort) const;
 
             /* Set peer data */
             void setPeerId(QByteArray const &);
