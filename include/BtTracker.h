@@ -78,100 +78,100 @@
 #include <QNetworkRequest>
 #include <QUrl>
 
-namespace BtQt {
-    /* Download event */
-    enum class BtTrackerDownloadEvent {
-        /* empty is a default state */
-        empty = 0,
-        started,
-        completed,
-        stopped
-    };
+NAMESPACE_BEGIN(BtQt)
+/* Download event */
+enum class BtTrackerDownloadEvent {
+    /* empty is a default state */
+    empty = 0,
+    started,
+    completed,
+    stopped
+};
 
-    /* Provide a function to calculate the info hash of a torrent file
-     * This function will set info_hash if succeed,
-     * and it will throw -1 when error occurs
+/* Provide a function to calculate the info hash of a torrent file
+ * This function will set info_hash if succeed,
+ * and it will throw -1 when error occurs
+ * */
+void torrentInfoHash(QFile &torrentFile, QByteArray &);
+/* This function will set info_hash if succeed,
+ * and will do nothing when failed
+ * */
+void torrentInfoHash(QByteArray const &torrentMetaData, QByteArray &);
+
+class BtTrackerRequest {
+private:
+    /* Tracker data */
+    /* The variables are named as the protocol said.
+     * DO NOT HATE UNDERLINES! */
+    QByteArray info_hash;
+    QByteArray peer_id;
+    QHostAddress ip;
+    quint16 port;
+    quint64 uploaded;
+    quint64 downloaded;
+    quint64 left;
+    BtTrackerDownloadEvent event;
+
+    /* Optional */
+    bool compact;
+    bool no_peer_id;
+    int numwant;
+
+
+    /* This request will be built when first toRequestData is called!
+     * Every time new data setted, this request will be cleared.
+     * Next time toRequest called, it will be generated automatically.
      * */
-    void torrentInfoHash(QFile &torrentFile, QByteArray &);
-    /* This function will set info_hash if succeed,
-     * and will do nothing when failed
-     * */
-    void torrentInfoHash(QByteArray const &torrentMetaData, QByteArray &);
+    QByteArray requestData;
+    bool requestDataGenerated;
+public:
+    BtTrackerRequest();
+    /* ip is optional, so it's the default value of QHostAddress when not
+     * presented;
+     * event has a option 'empty' */
+    BtTrackerRequest(QByteArray const &info_hash, QByteArray const &peer_id, quint16 port, quint64 uploaded, quint64 downloaded, quint64 left, QHostAddress const & = QHostAddress(), BtTrackerDownloadEvent = BtTrackerDownloadEvent::empty);
+    /* Methods */
+    void setInfoHash(QByteArray const &);
+    void setPeerId(QByteArray const &);
+    void setIp(QHostAddress const &);
+    void setPort(quint16 port);
+    void setUploaded(quint64);
+    void setDownloaded(quint64);
+    void setLeft(quint64);
+    void setEvent(BtTrackerDownloadEvent);
 
-    class BtTrackerRequest {
-        private:
-            /* Tracker data */
-            /* The variables are named as the protocol said.
-             * DO NOT HATE UNDERLINES! */
-            QByteArray info_hash;
-            QByteArray peer_id;
-            QHostAddress ip;
-            quint16 port;
-            quint64 uploaded;
-            quint64 downloaded;
-            quint64 left;
-            BtTrackerDownloadEvent event;
+    void setCompact(bool);
+    void setNoPeerId(bool);
+    void setNumwant(int);
 
-            /* Optional */
-            bool compact;
-            bool no_peer_id;
-            int numwant;
-
-
-            /* This request will be built when first toRequestData is called!
-             * Every time new data setted, this request will be cleared.
-             * Next time toRequest called, it will be generated automatically.
-             * */
-            QByteArray requestData;
-            bool requestDataGenerated;
-        public:
-            BtTrackerRequest();
-            /* ip is optional, so it's the default value of QHostAddress when not
-             * presented;
-             * event has a option 'empty' */
-            BtTrackerRequest(QByteArray const &, QByteArray const &, quint16, quint64, quint64, quint64, QHostAddress const & = QHostAddress(), BtTrackerDownloadEvent = BtTrackerDownloadEvent::empty);
-            /* Methods */
-            void setInfoHash(QByteArray const &);
-            void setPeerId(QByteArray const &);
-            void setIp(QHostAddress const &);
-            void setPort(quint16 port);
-            void setUploaded(quint64);
-            void setDownloaded(quint64);
-            void setLeft(quint64);
-            void setEvent(BtTrackerDownloadEvent);
-
-            void setCompact(bool);
-            void setNoPeerId(bool);
-            void setNumwant(int);
-
-            /* I think it's not necessary to expose all data to access. */
-            QByteArray getInfoHash() const;
-            QByteArray getPeerId() const;
-            QHostAddress getIp() const;
-            quint16 getPort() const;
-            bool isCompact() const;
-            bool isNoPeerId() const;
-            int getNumwant() const;
+    /* I think it's not necessary to expose all data to access. */
+    QByteArray getInfoHash() const;
+    QByteArray getPeerId() const;
+    QHostAddress getIp() const;
+    quint16 getPort() const;
+    bool isCompact() const;
+    bool isNoPeerId() const;
+    int getNumwant() const;
 
 #ifndef QT_NO_DEBUG
-            /* display what is in this request */
-            void display() const;
+    /* display what is in this request */
+    void display() const;
 #endif
 
-            /* Get request consists of info_hash, peer_id, ip, port, uploaded,
-             * downloaded, left and event */
-            const QByteArray& toRequestData() const;
-    };
+    /* Get request consists of info_hash, peer_id, ip, port, uploaded,
+     * downloaded, left and event */
+    const QByteArray& toRequestData() const;
+};
 
-    /* Provide a function to send request to the tracker server
-     * It will throw exceptions when error following errors occured:
-     * - Socket connect failed
-     * - Socket read failed
-     * It will warn when get an empty reply
-     * */
-    QByteArray sendTrackerRequest(BtTrackerRequest const &, QUrl trackerUrl);
+/* Provide a function to send request to the tracker server
+ * It will throw exceptions when error following errors occured:
+ * - Socket connect failed
+ * - Socket read failed
+ * It will warn when get an empty reply
+ * */
+QByteArray sendTrackerRequest(BtTrackerRequest const &, QUrl trackerUrl);
 
-}
+NAMESPACE_END(BtQt)
 
 /* There some facts of tracker response:
  * The tracker responds with "text/plain" document consiting of bencoded
@@ -224,53 +224,54 @@ namespace BtQt {
  * Above are copied from [https://wiki.theory.org/BitTorrentSpecification]
  * */
 
-namespace BtQt {
+NAMESPACE_BEGIN(BtQt)
 
-    /* Provide a function to deal with the response received from tracker server
-     * It will throw exceptions when error following errors occured
+/* Provide a function to deal with the response received from tracker server
+ * It will throw exceptions when error following errors occured
+ * */
+QMap<QString, QVariant> parseTrackerResponse(QByteArray const &);
+
+class BtTrackerResponse {
+private:
+    /* Response data.
      * */
-    QMap<QString, QVariant> parseTrackerResponse(QByteArray const &);
+    int Interval;
+    QByteArray TrackerId;
+    int Complete;
+    int InComplete;
+    QList<QMap<QString, QVariant>> Peers;
+    /* Optional */
+    int MinInterval;
+    QString failureReason;
+    QString warningMessage;
 
-    class BtTrackerResponse {
-        private:
-            /* Response data.
-             * */
-            int Interval;
-            QByteArray TrackerId;
-            int Complete;
-            int InComplete;
-            QList<QMap<QString, QVariant>> Peers;
-            /* Optional */
-            int MinInterval;
-            QString failureReason;
-            QString warningMessage;
+public:
+    BtTrackerResponse(QMap<QString, QVariant> const &);
 
-        public:
-            BtTrackerResponse(QMap<QString, QVariant> const &);
+    /* Methods */
+    /* All functions will return empty value(int: -1, bool: false)
+     * when there's none.
+     * */
+    int interval() const;
+    QByteArray trackerId() const;
+    int complete() const;
+    int incomplete() const;
+    auto peers()->decltype(Peers) const;
+    int minInterval() const;
 
-            /* Methods */
-            /* All functions will return empty value(int: -1, bool: false)
-             * when there's none.
-             * */
-            int interval() const;
-            QByteArray trackerId() const;
-            int complete() const;
-            int incomplete() const;
-            auto peers()->decltype(Peers) const;
-            int minInterval() const;
+    /* Show if there's error.
+     * If true, the string will write to the input string.
+     * */
+    bool failed(QString &reason) const;
+    bool warned(QString &warning) const;
 
-            /* Show if there's error.
-             * If true, the string will write to the input string.
-             * */
-            bool failed(QString &reason) const;
-            bool warned(QString &warning) const;
-
+    bool isEmpty() const;
 #ifndef QT_NO_DEBUG
-            /* display what is in this request */
-            void display() const;
+    /* display what is in this request */
+    void display() const;
 #endif
-    };
-}
+};
+NAMESPACE_END(BtQt)
 
 /* Tracker 'scrape' Convention
  * By convention most trackers support another form of request, which queries

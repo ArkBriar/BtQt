@@ -8,6 +8,7 @@
 #include <QList>
 #include <QMap>
 #include <QVariant>
+#include <BtDefs.h>
 
 /* First, let`s show some facts about bencode
  * From wikipedia: [https://en.wikipedia.org/wiki/Bencode]
@@ -24,35 +25,37 @@
  *   - dictionary `{"bar":"spam", "foo":42}` would be encoded as follows: `d3:bar4:spam3:fooi42ee`
  * */
 
-namespace BtQt {
-    /* Provide two sets of functions to decode from the torrent data
-     * These functions will throw exceptions if error occurs
-     * */
-    void BtDecode(QByteArray const &data, QVariant &);
+NAMESPACE_BEGIN(BtQt)
 
-    void BtDecodeBencodeInteger(QByteArray const &data, QByteArray &);
+/* Provide two sets of functions to decode from the torrent data
+ * These functions will throw exceptions if error occurs
+ * */
+void BtDecode(QByteArray const &data, QVariant &);
 
-    void BtDecodeBencodeString(QByteArray const &data, QByteArray &);
+void BtDecodeBencodeInteger(QByteArray const &data, QByteArray &);
 
-    void BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &);
+void BtDecodeBencodeString(QByteArray const &data, QByteArray &);
 
-    void BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVariant> &);
+void BtDecodeBencodeList(QByteArray const &data, QList<QVariant> &);
 
-    /* Provide two sets of functions to encode data to the torrent data
-     * These functions will throw exceptions if error occurs
-     * */
-    void BtEncodeBencodeInteger(qint64 data, QByteArray &);
+void BtDecodeBencodeDictionary(QByteArray const &data, QMap<QString, QVariant> &);
 
-    void BtEncodeBencodeString(QByteArray const &, QByteArray &);
-    /* Contents(what in QVariant) must be one of:
-     * Int, String(ByteArray), List<Contents>, Map<String, Contents>
-     * Due to QVariant's problem, when canConvert QByteArray, it will check if
-     * the value can convert to int64. If possible, it will call encode as
-     * integer instead of string
-     * */
-    void BtEncodeBencodeList(QList<QVariant> const &, QByteArray &);
+/* Provide two sets of functions to encode data to the torrent data
+ * These functions will throw exceptions if error occurs
+ * */
+void BtEncodeBencodeInteger(qint64 data, QByteArray &);
 
-    void BtEncodeBencodeMap(QMap<QString, QVariant> const&, QByteArray &);
-}
+void BtEncodeBencodeString(QByteArray const &, QByteArray &);
+/* Contents(what in QVariant) must be one of:
+ * Int, String(ByteArray), List<Contents>, Map<String, Contents>
+ * Due to QVariant's problem, when canConvert QByteArray, it will check if
+ * the value can convert to int64. If possible, it will call encode as
+ * integer instead of string
+ * */
+void BtEncodeBencodeList(QList<QVariant> const &, QByteArray &);
+
+void BtEncodeBencodeMap(QMap<QString, QVariant> const&, QByteArray &);
+
+NAMESPACE_END(BtQt)
 
 #endif // __BTBENCODE_H__

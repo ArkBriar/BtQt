@@ -504,6 +504,11 @@ bool BtTrackerResponse::warned(QString &warning) const
     return true;
 }
 
+bool BtTrackerResponse::isEmpty() const
+{
+    return Interval == -1 && failureReason.isEmpty();
+}
+
 #ifndef QT_NO_DEBUG
 void BtTrackerResponse::display() const
 {

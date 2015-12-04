@@ -264,10 +264,22 @@ QList<QByteArray> BtTorrent::pieces() const
     return ret;
 }
 
-qint64 BtTorrent::length() const
+bool BtTorrent::isMultiFile() const
 {
     if(torrentInfo.contains("files"))
-        return -1;
+        return false;
+    return true;
+}
+
+qint64 BtTorrent::length() const
+{
+    if(isMultiFile()) {
+        qint64 length = 0;
+        for(auto i : files()) {
+            length += i["length"].toLongLong();
+        }
+        return length;
+    }
     return torrentInfo.value("length").toByteArray().toLongLong();
 }
 

@@ -18,7 +18,7 @@
 #include "BtDebug.h"
 #include "BtBencode.h"
 
-namespace BtQt {
+NAMESPACE_BEGIN(BtQt)
 
 /* Torrent file structure. All strings must be UTF-8 encoded.
  * {
@@ -105,111 +105,112 @@ namespace BtQt {
  * This program will sign it's own torrents with 'creation date', 'created by: BtQt [Version]', 'comment'(optional)
  * */
 
-    class BtTorrent {
-        private:
-            /* Data
-             * How to store the torrent data?
-             * In Json or some Qt structure?
-             * */
-            //QJsonObject torrentJsonObject;
-            QMap<QString, QVariant> torrentObject;
+class BtTorrent {
+private:
+    /* Data
+     * How to store the torrent data?
+     * In Json or some Qt structure?
+     * */
+    //QJsonObject torrentJsonObject;
+    QMap<QString, QVariant> torrentObject;
 
-            /* Index, built when decode or setvalue is done */
-            QMap<QString, QVariant> torrentInfo;
-            QList<QVariant> torrentPieces;
+    /* Index, built when decode or setvalue is done */
+    QMap<QString, QVariant> torrentInfo;
+    QList<QVariant> torrentPieces;
 
-            bool isParsed;
+    bool isParsed;
 
-            /* If this is a valid torrent object, return true;
-             * else return false
-             * */
-            bool isValid();
+    /* If this is a valid torrent object, return true;
+     * else return false
+     * */
+    bool isValid();
 
-            QByteArray info_hash;
+    QByteArray info_hash;
 
-        public:
-            /* Construct with isParsed be false */
-            BtTorrent() : isParsed(false) {}
+public:
+    /* Construct with isParsed be false */
+    BtTorrent() : isParsed(false) {}
 
-            /* Methods */
+    /* Methods */
 #ifndef QT_NO_DEBUG
-            /* Provide a method to print the data
-             * display()
-             * */
-            void display() const;
+    /* Provide a method to print the data
+     * display()
+     * */
+    void display() const;
 #endif // QT_NO_DEBUG
 
-            /* Get specific data from torrent object */
-            QString announce() const;
-            QString name() const;
-            qint64 pieceLength() const;
-            QList<QByteArray> pieces() const;
-            /* When it's a single-file torrent, return empty QList
-             * else return with files
-             * */
-            QList<QMap<QString, QVariant>> files() const;
-            /* When it's a multiple-files torrent, return -1
-             * else return length
-             * */
-            qint64 length() const;
+    /* Get specific data from torrent object */
+    QString announce() const;
+    QString name() const;
+    qint64 pieceLength() const;
+    QList<QByteArray> pieces() const;
+    /* When it's a single-file torrent, return empty QList
+     * else return with files
+     * */
+    QList<QMap<QString, QVariant>> files() const;
+    /* When it's a multiple-files torrent, return total length of the files
+     * else return length
+     * */
+    bool isMultiFile() const;
+    qint64 length() const;
 
-            /* Optional information
-             * Return empty structure when not found in meta object,
-             * and return -1 when type is int, false when bool
-             * */
-            QList<QString> announceList() const;
-            bool isPrivate() const;
-            QList<QString> httpseeds() const;
-            /* For DHT */
-            QList<QPair<QString, int>> nodes() const;
+    /* Optional information
+     * Return empty structure when not found in meta object,
+     * and return -1 when type is int, false when bool
+     * */
+    QList<QString> announceList() const;
+    bool isPrivate() const;
+    QList<QString> httpseeds() const;
+    /* For DHT */
+    QList<QPair<QString, int>> nodes() const;
 
-            QString creationDate() const;
-            QString comment() const;
-            QString createdBy() const;
+    QString creationDate() const;
+    QString comment() const;
+    QString createdBy() const;
 #ifndef BT_NO_DEPRECATED_FUNCTION
-            QString encoding() const;
+    QString encoding() const;
 #endif // BT_NO_DEPRECATED_FUNCTION
 
-            QByteArray infoHash() const;
+    QByteArray infoHash() const;
 
-            /* Provide some funtions to set part of those options */
-            void setCreationDate(QString const &);
-            void setComment(QString const &);
-            void setCreateBy(QString const &);
+    /* Provide some funtions to set part of those options */
+    void setCreationDate(QString const &);
+    void setComment(QString const &);
+    void setCreateBy(QString const &);
 #ifndef BT_NO_DEPRECATED_FUNCTION
-            /* Encodint will never take effect in BtQt */
-            void setEncoding(QString const &);
+    /* Encodint will never take effect in BtQt */
+    void setEncoding(QString const &);
 #endif // BT_NO_DEPRECATED_FUNCTION
 
-            /* Set value
-             * This function would always destory data in the argument
-             * If input is not valid, return fasle
-             * else return true
-             * */
-            bool setValue(QMap<QString, QVariant> &);
+    /* Set value
+     * This function would always destory data in the argument
+     * If input is not valid, return fasle
+     * else return true
+     * */
+    bool setValue(QMap<QString, QVariant> &);
 
-            /* Set info_hash */
-            void setInfoHash(QByteArray const &);
+    /* Set info_hash */
+    void setInfoHash(QByteArray const &);
 
-            /* get a copy of value */
-            QMap<QString, QVariant> value() const;
+    /* get a copy of value */
+    QMap<QString, QVariant> value() const;
 
-            /* Clear
-             * Reset data
-             * */
-            void clear();
+    /* Clear
+     * Reset data
+     * */
+    void clear();
 
-            /* Provide a method to parse torrent file
-             * decodeTorrentFile(QFile &)
-             * This function will also set the info_hash
-             * */
-            bool decodeTorrentFile(QFile &torrentFile);
+    /* Provide a method to parse torrent file
+     * decodeTorrentFile(QFile &)
+     * This function will also set the info_hash
+     * */
+    bool decodeTorrentFile(QFile &torrentFile);
 
-            /* Provide a method to parse itself to a torent file
-             * encodeTorrentFile(QFile &)
-             * */
-            bool encodeTorrentFile(QFile &torrentFile);
-    };
-}
+    /* Provide a method to parse itself to a torent file
+     * encodeTorrentFile(QFile &)
+     * */
+    bool encodeTorrentFile(QFile &torrentFile);
+};
+NAMESPACE_END(BtQt)
 
 #endif // __BTTORRENT_H__

@@ -27,8 +27,8 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS_RELEASE += -Ofast -flto -fno-strict-aliasing -std=c++11
     QMAKE_LFLAGS_RELEASE -= -Wl,-O1
     QMAKE_LFLAGS_RELEASE += -Ofast -flto 
-#   QMAKE_LFLAGS_RELEASE += -Wl,-rpath,. -Wl,-rpath,/usr/lib64/ \
-    -Wl,-rpath,/usr/lib
+    #QMAKE_LFLAGS_RELEASE += -Wl,-rpath,. -Wl,-rpath,/usr/lib64/ \
+    #-Wl,-rpath,/usr/lib
 
     SOURCES += src/main.cpp
     RESOURCES += ui/qml/qml.qrc
@@ -40,13 +40,17 @@ SOURCES += src/BtBencode.cpp \
         src/BtTorrent.cpp \
         src/BtTracker.cpp \
         src/BtPeer.cpp \
-        src/BtCore.cpp
+        src/BtCore.cpp \
+        src/QBitTorrent.cpp \
 
 HEADERS += include/BtBencode.h \
         include/BtTorrent.h \
         include/BtTracker.h \
         include/BtPeer.h \
-        include/BtCore.h
+        include/BtCore.h \
+        include/BtDefs.h \
+        include/BtDebug.h \
+        include/QBitTorrent.h \
 
 unix:!macx: {
 # Static librarys

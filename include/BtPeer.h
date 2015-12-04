@@ -159,117 +159,117 @@
 #include <QTcpSocket>
 #include <QUdpSocket>
 
-namespace BtQt {
-    /* Provide a function to generate peer id, never fails
-     * There are mainly two conventions how to encode client and client version
-     * information into the peer_id, Azureus-style and Shadow's-style.
-     * Azureus-style uses the following encoding: '-', two characters for client
-     * id, four ascii digits for version number, '-', followed by random numbers.
-     * We use Azureus-style id and use 'QB' for BtQt client id.
-     * Don't forget to do qsrand() before call this function.
-     * */
-    QByteArray generatePeerId();
+NAMESPACE_BEGIN(BtQt)
+/* Provide a function to generate peer id, never fails
+ * There are mainly two conventions how to encode client and client version
+ * information into the peer_id, Azureus-style and Shadow's-style.
+ * Azureus-style uses the following encoding: '-', two characters for client
+ * id, four ascii digits for version number, '-', followed by random numbers.
+ * We use Azureus-style id and use 'QB' for BtQt client id.
+ * Don't forget to do qsrand() before call this function.
+ * */
+QByteArray generatePeerId();
 
-    /* BtPeer is an object that maintain information of peers, both local and
-     * remote.
-     *
-     * BtPeer will provide a set of method to complete communicate with other
-     * peers
-     * */
-    class BtPeer {
-        protected:
-            /* Data to store */
-            QByteArray peer_id;
-            QHostAddress peerIp;
-            quint16 peerPort;
+/* BtPeer is an object that maintain information of peers, both local and
+ * remote.
+ *
+ * BtPeer will provide a set of method to complete communicate with other
+ * peers
+ * */
+class BtPeer {
+protected:
+    /* Data to store */
+    QByteArray peer_id;
+    QHostAddress peerIp;
+    quint16 peerPort;
 
-            bool AmChoking;
-            bool AmInterested;
-            bool PeerChoking;
-            bool PeerInterested;
+    bool AmChoking;
+    bool AmInterested;
+    bool PeerChoking;
+    bool PeerInterested;
 
-            /* Specify what torrent this peer has */
-            const BtTorrent& torrentRef;
-            /* Specify pieces this peer has */
-            QBitArray pieces;
+    /* Specify what torrent this peer has */
+    const BtTorrent& torrentRef;
+    /* Specify pieces this peer has */
+    QBitArray pieces;
 
-        public:
-            BtPeer(BtTorrent const &);
-            BtPeer(BtTorrent const &, QByteArray const &,
-                    QHostAddress const &, quint16 = 6881);
+public:
+    BtPeer(BtTorrent const &);
+    BtPeer(BtTorrent const &, QByteArray const &,
+            QHostAddress const &, quint16 = 6881);
 
 
-            /* Set peer data */
-            void setPeerId(QByteArray const &);
-            void setIp(QHostAddress const &);
-            void setPort(quint16);
-            void setTorrentRef(BtTorrent const &);
+    /* Set peer data */
+    void setPeerId(QByteArray const &);
+    void setIp(QHostAddress const &);
+    void setPort(quint16);
+    void setTorrentRef(BtTorrent const &);
 
-            void pieceOk(int);
+    void pieceOk(int);
 
-            /* Get peer info */
-            QByteArray getPeerId() const;
-            QHostAddress getIp() const;
-            quint16 getPort() const;
-            const BtTorrent& getTorrentRef() const;
-            bool amChoking() const;
-            bool amInterested() const;
-            bool peerChoking() const;
-            bool peerInterested() const;
-            QBitArray getPieceBitArray() const;
-            bool havePiece(int) const;
-    };
+    /* Get peer info */
+    QByteArray getPeerId() const;
+    QHostAddress getIp() const;
+    quint16 getPort() const;
+    const BtTorrent& getTorrentRef() const;
+    bool amChoking() const;
+    bool amInterested() const;
+    bool peerChoking() const;
+    bool peerInterested() const;
+    QBitArray getPieceBitArray() const;
+    bool havePiece(int) const;
+};
 
-    class BtRemotePeer : public BtPeer {
-        public:
-            BtRemotePeer(BtTorrent const &);
-            BtRemotePeer(BtTorrent const &, QByteArray const &,
-                    QHostAddress const &, quint16 = 6881);
-    };
+class BtRemotePeer : public BtPeer {
+public:
+    BtRemotePeer(BtTorrent const &);
+    BtRemotePeer(BtTorrent const &, QByteArray const &,
+            QHostAddress const &, quint16 = 6881);
+};
 
-    /* Local Peer is declared to be QObject so that we can use
-     * signal-slot mechanism */
-    class BtLocalPeer : public QObject, public BtPeer {
-        Q_OBJECT
+/* Local Peer is declared to be QObject so that we can use
+ * signal-slot mechanism */
+class BtLocalPeer : public QObject, public BtPeer {
+    Q_OBJECT
 
-        private:
-            /* This is copy of torrent this peer serves */
-            BtTorrent torrent;
+private:
+    /* This is copy of torrent this peer serves */
+    BtTorrent torrent;
 
-            /* Socket for communication */
-            QTcpSocket tcpSocket;
-            QUdpSocket udpSocket;
+    /* Socket for communication */
+    QTcpSocket tcpSocket;
+    QUdpSocket udpSocket;
 
-        public:
-            BtLocalPeer(BtTorrent const &);
-            BtLocalPeer(BtTorrent const &, QByteArray const &,
-                    QHostAddress const &, quint16 = 6881);
-            /* These are all over TCP */
-            QByteArray handshake() const;
-            /* Implementation of messages */
-            QByteArray keepAlive() const;
-            QByteArray choke() const;
-            QByteArray unchoke() const;
-            QByteArray interested() const;
-            QByteArray notInterested() const;
-            QByteArray have(int index) const;
-            QByteArray bitfield() const;
-            QByteArray request(int index, qint64 begin, qint64 length) const;
-            /* pieceData is correspongding to piece of index */
-            QByteArray piece(int index, qint64 begin, qint64 length,
-                    QByteArray const& pieceData) const;
-            QByteArray cancel(int index, qint64 begin, qint64 length) const;
-            QByteArray port(quint16 listenPort) const;
+public:
+    BtLocalPeer(BtTorrent const &);
+    BtLocalPeer(BtTorrent const &, QByteArray const &,
+            QHostAddress const &, quint16 = 6881);
+    /* These are all over TCP */
+    QByteArray handshake() const;
+    /* Implementation of messages */
+    QByteArray keepAlive() const;
+    QByteArray choke() const;
+    QByteArray unchoke() const;
+    QByteArray interested() const;
+    QByteArray notInterested() const;
+    QByteArray have(int index) const;
+    QByteArray bitfield() const;
+    QByteArray request(int index, qint64 begin, qint64 length) const;
+    /* pieceData is correspongding to piece of index */
+    QByteArray piece(int index, qint64 begin, qint64 length,
+            QByteArray const& pieceData) const;
+    QByteArray cancel(int index, qint64 begin, qint64 length) const;
+    QByteArray port(quint16 listenPort) const;
 
-            /* Process messages */
-            /* Send messages, return true if sent */
-            bool send(BtRemotePeer const &, QByteArray const &);
+    /* Process messages */
+    /* Send messages, return true if sent */
+    bool send(BtRemotePeer const &, QByteArray const &);
 
-            /* Process message and decide what to do next */
-            void process(QByteArray const &);
-        public slots:
-            void received(QByteArray const &);
-    };
-}
+    /* Process message and decide what to do next */
+    void process(QByteArray const &);
+public slots:
+    void received(QByteArray const &);
+};
+NAMESPACE_END(BtQt)
 
 #endif // __BTPEER_H__
